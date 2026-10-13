@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Activer mon profil — WYK STAFF</title><meta name="robots" content="noindex">
+<link rel="icon" href="https://i.postimg.cc/150DzRjK/Logo-wyk-avec-fond-blanc.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/staff.css">
+</head><body>
+<header id="top"></header>
+<main><div class="wrap" style="max-width:520px">
+  <section class="nm card" id="s1"><h3 id="h1"></h3>
+    <div class="msg" id="m1" style="display:none"></div>
+    <form id="f1"><div class="field"><label>Code d'invitation</label><input id="code" placeholder="WYK-XXXXXX" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase;letter-spacing:.08em;font-weight:600" required></div><button class="btn pri" style="width:100%" id="b1">Vérifier le code</button></form>
+  </section>
+  <section class="nm card" id="s2" style="display:none">
+    <h3 id="h2"></h3>
+    <div class="nm-in" style="padding:16px;margin-bottom:18px;border-radius:14px"><div class="small mut">Poste confirmé</div><b id="pos" style="font-family:var(--fd);font-size:20px"></b><div class="small mut" id="cat"></div></div>
+    <div class="msg" id="m2" style="display:none"></div>
+    <div class="tabs" id="tb" style="padding:0 0 14px"><button class="tab on" data-t="new">Créer mon compte</button><button class="tab" data-t="old">J'ai déjà un compte</button></div>
+    <form id="f2">
+      <div class="field"><label>Nom complet</label><input id="nm" autocomplete="name" placeholder="Prénom Nom" required></div>
+      <div class="field" id="fe"><label>Email</label><input id="em" type="email" autocomplete="username" required></div>
+      <div class="field" id="fp"><label>Mot de passe</label><input id="pw" type="password" minlength="6" autocomplete="new-password" required><span class="small mut">6 caractères minimum.</span></div>
+      <button class="btn pri" style="width:100%" id="b2"></button>
+    </form>
+  </section>
+</div></main>
+<footer id="foot"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="/staff.js"></script>
+<script>
+(async function(){
+  var $=function(i){return document.getElementById(i)},mode='new',code='';
+  $('h1').innerHTML=S.ic('key')+'Confirmer mon code';$('h2').innerHTML=S.ic('check')+'Créer mon profil';$('b2').innerHTML=S.ic('check')+'Confirmer et continuer';
+  var show=function(id,t,ok){var m=$(id);m.style.display=t?'block':'none';m.className='msg'+(ok?' ok':'');m.textContent=t||''};
+  var user=await S.shell('');
+  if(user){var p=await S.myProfile();if(p){location.href='/moi';return}}
+  async function check(c){
+    show('m1','');$('b1').disabled=true;var r=await S.db.rpc('staff_check_invite',{p_code:c});$('b1').disabled=false;
+    if(r.error||!r.data||!r.data.valid){show('m1',(r.data&&r.data.reason)||'Vérification impossible, réessayez.');return}
+    code=c.trim().toUpperCase();$('code').value=code;$('s1').style.display='none';$('s2').style.display='block';
+    $('pos').textContent=r.data.position||'Collaborateur WYK';$('cat').textContent=r.data.category?'Catégorie : '+r.data.category:'';
+    if(user){$('tb').style.display='none';$('fe').style.display='none';$('fp').style.display='none';$('em').required=false;$('pw').required=false}
+  }
+  $('f1').onsubmit=function(e){e.preventDefault();check($('code').value)};
+  var c0=S.q('code');if(c0){$('code').value=c0.toUpperCase();check(c0)}
+  $('tb').onclick=function(e){var b=e.target.closest('[data-t]');if(!b)return;mode=b.dataset.t;[].forEach.call($('tb').children,function(x){x.classList.toggle('on',x===b)});$('pw').autocomplete=mode==='new'?'new-password':'current-password'};
+  $('f2').onsubmit=async function(e){e.preventDefault();show('m2','');var name=$('nm').value.trim();$('b2').disabled=true;
+    try{
+      if(!user){
+        if(mode==='new'){
+          var r=await S.db.auth.signUp({email:$('em').value.trim(),password:$('pw').value,options:{data:{full_name:name}}});
+          if(r.error)throw r.error;
+          if(!r.data.session){S.setPending({code:code,name:name});show('m2','Compte créé. Confirmez votre email grâce au lien reçu, puis connectez-vous : votre profil sera créé automatiquement.',true);$('b2').style.display='none';return}
+          S.user=r.data.user;
+        }else{S.setPending({code:code,name:name});await S.login($('em').value.trim(),$('pw').value);location.href='/moi?bienvenue=1';return}
+      }
+      var rr=await S.db.rpc('staff_redeem_invite',{p_code:code,p_full_name:name});
+      if(rr.error)throw rr.error;
+      try{localStorage.removeItem('wyk-staff-pending')}catch(x){}
+      location.href='/moi?bienvenue=1';
+    }catch(x){show('m2',S.errMsg(x));$('b2').disabled=false}
+  };
+})();
+</script>
+</body></html>

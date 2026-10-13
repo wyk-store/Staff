@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Connexion — WYK STAFF</title><meta name="robots" content="noindex">
+<link rel="icon" href="https://i.postimg.cc/150DzRjK/Logo-wyk-avec-fond-blanc.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/staff.css">
+</head><body>
+<header id="top"></header>
+<main><div class="wrap" style="max-width:480px"><section class="nm card" id="box"></section></div></main>
+<footer id="foot"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="/staff.js"></script>
+<script>
+(async function(){
+  var box=document.getElementById('box');
+  var recovery=/type=recovery/.test(location.hash);
+  var u=await S.shell('');
+  if(recovery){
+    box.innerHTML='<h3>'+S.ic('key')+'Nouveau mot de passe</h3><div class="msg" id="m" style="display:none"></div><form id="f"><div class="field"><label>Nouveau mot de passe</label><input type="password" id="p" minlength="6" autocomplete="new-password" required></div><button class="btn pri" style="width:100%">Enregistrer</button></form>';
+    document.getElementById('f').onsubmit=async function(e){e.preventDefault();var r=await S.db.auth.updateUser({password:document.getElementById('p').value});var m=document.getElementById('m');m.style.display='block';if(r.error){m.className='msg';m.textContent=S.errMsg(r.error)}else{m.className='msg ok';m.textContent='Mot de passe modifié. Redirection…';setTimeout(function(){location.href='/moi'},1200)}};
+    return;
+  }
+  if(u){location.href=S.admin?'/admin':'/moi';return}
+  box.innerHTML='<h3>'+S.ic('key')+'Se connecter</h3><div id="lf"></div><p class="small mut" style="margin-top:16px;text-align:center">Pas encore de profil ? <a class="red" href="/">Entrez votre code d\'invitation</a></p>';
+  S.loginForm(document.getElementById('lf'));
+})();
+</script>
+</body></html>

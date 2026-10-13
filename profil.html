@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Profil — WYK STAFF</title><meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="https://i.postimg.cc/150DzRjK/Logo-wyk-avec-fond-blanc.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/staff.css">
+</head><body>
+<header id="top"></header>
+<main><div class="wrap" id="pf"><div class="nm card empty">Chargement du profil…</div></div></main>
+<footer id="foot"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="/staff.js"></script>
+<script>
+(async function(){
+  S.shell('');
+  var id=S.q('id'),box=document.getElementById('pf');
+  var msg=function(t,d){box.innerHTML='<div class="nm card unavail"><h2>'+t+'</h2><p class="mut">'+d+'</p><p style="margin-top:20px"><a class="btn" href="/">Retour à l\'accueil</a></p></div>'};
+  if(!id){msg('Profil introuvable','Aucun identifiant n\'a été fourni.');return}
+  var r=await S.db.rpc('staff_public_profile',{p_code:id});
+  if(r.error){msg('Erreur de chargement','Réessayez dans un instant.');return}
+  var p=r.data;
+  if(!p){msg('Profil introuvable','Ce profil n\'existe pas ou le lien est incorrect.');return}
+  if(p.unavailable){msg('Profil indisponible','Ce profil n\'est pas accessible pour le moment.');return}
+  document.title=p.full_name+' — WYK STAFF';
+  box.innerHTML=S.renderProfile(p,{code:id});S.bindProfile(box,id);
+})();
+</script>
+</body></html>
