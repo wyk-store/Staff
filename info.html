@@ -1,28 +1,16 @@
 <!doctype html>
 <html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://byrklytqoucdskzvcoau.supabase.co wss://byrklytqoucdskzvcoau.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"><meta name="referrer" content="strict-origin-when-cross-origin"><meta name="color-scheme" content="light dark">
 <title>WYK STAFF</title><meta name="robots" content="noindex">
 <link rel="icon" href="https://i.postimg.cc/150DzRjK/Logo-wyk-avec-fond-blanc.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Caveat:wght@600&display=swap">
 <link rel="stylesheet" href="/staff.css">
-<style>.prose{max-width:760px;margin:0 auto}.prose h1{font-size:clamp(30px,5vw,44px);margin-bottom:8px}.prose h2{font-size:21px;margin:26px 0 8px}.prose p,.prose li{color:var(--t2);margin-bottom:10px}.prose ul{padding-left:22px}</style>
 </head><body>
 <header id="top"></header>
-<main><div class="wrap"><article class="nm card prose" id="a" style="padding:clamp(22px,4vw,44px)"></article></div></main>
+<main><div class="wrap"><div class="doc" id="doc"></div></div></main>
 <footer id="foot"></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="/staff.js"></script>
-<script>
-var WA='https://wa.me/'+S.WA;
-var PAGES={
-apropos:['À propos de nous',"<p>WYK, <b>plus qu'une entreprise, une communauté</b>. WYK STAFF est le portail des profils professionnels de l'équipe : une vitrine claire et vérifiable pour chaque collaborateur, livreur ou partenaire.</p><h2>Pourquoi ce portail ?</h2><ul><li>Présenter l'équipe WYK de façon professionnelle.</li><li>Permettre à chacun de valoriser son parcours et ses compétences.</li><li>Offrir un profil vérifiable par QR code, avec un statut toujours à jour.</li></ul><p>Le site boutique est sur <a class='red' href='https://wykht.com'>wykht.com</a>.</p>"],
-carrieres:['Carrières chez WYK',"<p>Envie de rejoindre l'aventure WYK ? Nous accueillons des profils variés : technique, boutique, service client, livraison.</p><p>Les offres sont communiquées directement par l'équipe. Écrivez-nous pour vous présenter : après validation, un <b>code d'invitation</b> vous permettra de créer votre profil sur ce portail.</p><p><a class='btn pri' href='"+WA+"' target='_blank' rel='noopener'>Nous écrire sur WhatsApp</a></p>"],
-confidentialite:['Politique de confidentialité',"<p>Ce portail traite les informations que chaque collaborateur choisit de renseigner : nom, photo, coordonnées, parcours, compétences, CV.</p><h2>Ce qui est public</h2><p>L'administration WYK définit, par catégorie d'emploi, quelles informations apparaissent sur la page publique. Tout le reste reste privé et n'est visible que par vous et l'administration. Dans l'espace « Mon profil », chaque rubrique indique si elle est <b>Public</b> ou <b>Privé</b>.</p><h2>Vos droits</h2><ul><li>Vous pouvez modifier ou retirer vos informations à tout moment.</li><li>Un profil inactif, suspendu ou en examen n'est plus visible publiquement.</li><li>Pour demander la suppression de votre profil, contactez WYK.</li></ul><h2>Sécurité</h2><p>Les données sont stockées sur une infrastructure sécurisée ; les accès sont protégés par compte et mot de passe.</p><p class='small mut'>Texte de départ : à faire relire et adapter avant de l'utiliser comme document juridique.</p>"],
-conditions:["Conditions d'utilisation","<p>En utilisant WYK STAFF, vous acceptez les règles suivantes.</p><ul><li>Votre code d'invitation est personnel : ne le partagez pas.</li><li>Les informations de votre profil doivent être exactes et professionnelles.</li><li>Vous ne publiez ni contenu illégal, ni contenu offensant, ni informations sur des tiers.</li><li>WYK peut modifier, désactiver, suspendre ou placer un profil en examen, notamment en cas de non-respect de ces règles.</li><li>L'identifiant employé et la date d'activation sont gérés par WYK et ne peuvent pas être modifiés.</li></ul><p class='small mut'>Texte de départ : à faire relire et adapter avant de l'utiliser comme document juridique.</p>"],
-contact:['Nous contacter',"<p>Une question sur votre profil, un code qui ne fonctionne pas, une modification que vous ne pouvez pas faire vous-même ?</p><p style='display:flex;gap:12px;flex-wrap:wrap'><a class='btn pri' href='"+WA+"' target='_blank' rel='noopener'>WhatsApp</a><a class='btn' href='https://wykht.com' target='_blank' rel='noopener'>Site WYK</a></p>"]};
-var k=S.q('p');if(!PAGES[k])k='apropos';
-S.shell('info?p='+k);
-document.title=PAGES[k][0]+' — WYK STAFF';
-document.getElementById('a').innerHTML='<h1>'+PAGES[k][0]+'</h1>'+PAGES[k][1];
-</script>
+<script src="/info.js"></script>
 </body></html>
