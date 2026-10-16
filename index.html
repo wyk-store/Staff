@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://byrklytqoucdskzvcoau.supabase.co wss://byrklytqoucdskzvcoau.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"><meta name="referrer" content="strict-origin-when-cross-origin"><meta name="color-scheme" content="light dark">
-<title>WYK STAFF — Portail des profils professionnels</title><meta name="robots" content="noindex"><meta name="description" content="Espace des collaborateurs WYK : activez votre profil professionnel avec votre code d'invitation.">
-<link rel="icon" href="https://i.postimg.cc/150DzRjK/Logo-wyk-avec-fond-blanc.png">
+<title>WYK STAFF — Portail des profils professionnels</title><meta name="robots" content="noindex"><meta name="description" content="Espace des collaborateurs WYK : profils professionnels, badges numériques et CV.">
+<link rel="icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Caveat:wght@600&display=swap">
 <link rel="stylesheet" href="/staff.css">
@@ -14,34 +14,27 @@
     <h1>Votre profil professionnel, <span class="red">signé WYK</span></h1>
     <p>Un espace pour les collaborateurs et livreurs de WYK : une page de présentation claire, un badge numérique animé, un QR code et un CV professionnel prêt à partager.</p>
   </section>
-  <div id="auth" class="gate">
-    <div class="msg" id="sx" style="display:none">Votre session a expiré par sécurité. Reconnectez-vous pour continuer.</div>
-    <section class="nm card"><h3 id="ic1"></h3>
-      <p class="mut small" style="margin-bottom:16px">Votre responsable WYK vous a remis un code ? Entrez-le pour créer votre profil.</p>
-      <form id="cf"><div class="field"><label for="code">Code d'invitation</label><input id="code" placeholder="WYK-XXXXXX" autocapitalize="characters" autocomplete="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:.08em;font-weight:600" required></div>
-      <button class="btn pri" style="width:100%" id="cb"></button></form>
-    </section>
-  </div>
+  <div id="auth" class="gate" style="display:none"></div>
   <div class="steps">
-    <div class="nm step"><h4>Recevez votre code</h4><p>L'administrateur WYK vous remet un code personnel, à usage unique, lié à votre poste.</p></div>
-    <div class="nm step"><h4>Créez votre profil</h4><p>Photo, parcours, compétences : vous complétez vos informations professionnelles.</p></div>
-    <div class="nm step"><h4>Partagez-le</h4><p>Lien, QR code, badge et CV : seules les informations autorisées par WYK sont visibles.</p></div>
+    <div class="nm step"><h4>Une page claire</h4><p>Une présentation professionnelle de chaque membre de l'équipe WYK : poste, parcours et compétences.</p></div>
+    <div class="nm step"><h4>Un badge numérique</h4><p>Un badge animé avec QR code, à partager ou à télécharger en image et en PDF.</p></div>
+    <div class="nm step"><h4>Un CV professionnel</h4><p>Un CV soigné, mis en page sur une page, prêt à être partagé.</p></div>
   </div>
+  <p class="info-mail mut"><span>Une question ? Écrivez-nous :</span><a href="mailto:contact@wykht.com"><b>contact@wykht.com</b></a></p>
 </div></main>
 <footer id="foot"></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="/staff.js"></script>
 <script>
 (async function(){
-  document.getElementById('ic1').innerHTML=S.ic('key')+"J'ai un code";
-  document.getElementById('cb').innerHTML=S.ic('chev')+'Continuer';
-  if(S.q('session')==='expiree')document.getElementById('sx').style.display='block';
   var u=await S.shell('index');
   if(u){
-    document.getElementById('auth').innerHTML='<section class="nm card" style="text-align:center"><h3 style="justify-content:center">'+S.ic('user')+'Vous êtes connecté</h3><p class="mut" style="margin-bottom:18px">'+S.esc(u.email)+'</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><a class="btn pri" href="/moi">'+S.ic('user')+'Mon profil</a>'+(S.admin?'<a class="btn" href="/admin">'+S.ic('grid')+'Espace administrateur</a>':'')+'</div></section>';
-    return;
+    var nm=S.me?S.me.full_name+' · '+S.me.employee_code:(S.isSyn(u.email)?'':u.email);
+    var h=document.getElementById('auth');h.style.display='';
+    h.innerHTML='<section class="nm card" style="text-align:center"><h3 style="justify-content:center">'+S.ic('user')+'Vous êtes connecté</h3><p class="mut" style="margin-bottom:18px">'+S.esc(nm)+'</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><a class="btn pri" href="/moi">'+S.ic('user')+'Mon profil</a>'+(S.admin?'<a class="btn" href="/admin">'+S.ic('grid')+'Espace administrateur</a>':'')+'</div></section>';
+  }else if(S.q('session')==='expiree'){
+    var g=document.getElementById('auth');g.style.display='';g.innerHTML='<div class="msg">Votre session a expiré par sécurité.</div>';
   }
-  document.getElementById('cf').onsubmit=function(e){e.preventDefault();var c=document.getElementById('code').value.trim();if(c)location.href='/activer?code='+encodeURIComponent(c.toUpperCase())};
 })();
 </script>
 </body></html>

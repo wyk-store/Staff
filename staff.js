@@ -2,7 +2,7 @@
 (function(){
 var SUPA_URL='https://byrklytqoucdskzvcoau.supabase.co',
 SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5cmtseXRxb3VjZHNrenZjb2F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2OTQ0ODcsImV4cCI6MjA5NDI3MDQ4N30.nH7LKYevuBd9jGmFmv7KMNoJu3X_rDaY1BHXZR1v3wM',
-LOGO='https://i.postimg.cc/J43jh72q/No-background.png',LOGO_WB='https://i.postimg.cc/150DzRjK/Logo-wyk-avec-fond-blanc.png',
+LOGO='/logo-wyk.png',LOGO_WB='/logo-wyk-blanc.png',
 WA='50940300966',PENDING='wyk-staff-pending',THEME='wyk-staff-theme',FAIL='wyk-staff-fails',IDLE_MIN=30;
 /* LOGIN : chemin de la page de connexion (non liée nulle part sur le site). Pour la cacher davantage :
    renomme connexion.html (ex. acces-7k2m.html) ET change cette valeur. */
@@ -25,6 +25,8 @@ S.url=function(n,qs){return(n==='index'?'/':'/'+n)+(qs?'?'+qs:'')};
 S.pubUrl=function(code){return location.origin+'/profil?id='+encodeURIComponent(code)};
 S.badgeUrl=function(code){return location.origin+'/badge?id='+encodeURIComponent(code)};
 S.idOf=function(row){return row.public_id||row.employee_code};
+S.isSyn=function(e){return /@staff\.wykht\.com$/i.test(e||'')};
+S.MAIL='contact@wykht.com';
 S.validEmail=function(e){return /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(String(e||''))};
 var tt;S.toast=function(m,err){var t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';t.className='toast';t.setAttribute('role','status');document.body.appendChild(t)}t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(tt);tt=setTimeout(function(){t.className='toast'},3400)};
 S.copy=function(txt,msg){(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){S.toast(msg||'Copié')},function(){var a=document.createElement('textarea');a.value=txt;document.body.appendChild(a);a.select();try{document.execCommand('copy');S.toast(msg||'Copié')}catch(e){S.toast('Copie impossible',1)}a.remove()})};
@@ -72,7 +74,7 @@ S.login=async function(email,pw){var l=S.lockLeft();if(l>0){var e=new Error('LOC
  saveFails({});S.user=r.data.user;await S.tryPending();return r.data.user};
 S.logout=async function(){try{await db.auth.signOut()}catch(e){}S.user=null;location.href='/'};
 S.setPending=function(o){try{localStorage.setItem(PENDING,JSON.stringify(o))}catch(e){}};
-S.saveExtras=async function(x){if(!x||!S.user)return;var u={};['birth_date','birth_place','nationality','phone'].forEach(function(k){if(x[k])u[k]=x[k]});if(Object.keys(u).length)await db.from('staff_profiles').update(u).eq('user_id',S.user.id)};
+S.saveExtras=async function(x){if(!x||!S.user)return;var u={};['birth_date','birth_place','nationality','phone','email'].forEach(function(k){if(x[k])u[k]=x[k]});if(Object.keys(u).length)await db.from('staff_profiles').update(u).eq('user_id',S.user.id)};
 S.tryPending=async function(){var o=null;try{o=JSON.parse(localStorage.getItem(PENDING)||'null')}catch(e){}if(!o||!S.user)return false;
  var r=await db.rpc('staff_redeem_invite',{p_code:o.code,p_full_name:o.name});if(!r.error||/déjà un profil/.test(r.error.message)){try{localStorage.removeItem(PENDING)}catch(e){}if(!r.error)try{await S.saveExtras(o.extra)}catch(e){}return !r.error}return false};
 /* déconnexion automatique après 30 min d'inactivité */
@@ -84,14 +86,19 @@ S.pwField=function(id,label,ac,extra){return'<div class="field"><label for="'+id
 S.bindEyes=function(root){root.querySelectorAll('[data-eye]').forEach(function(b){b.onclick=function(){var i=root.querySelector('#'+b.dataset.eye),s=i.type==='password';i.type=s?'text':'password';b.innerHTML=ic(s?'eyeoff':'eye')}})};
 /* formulaire de connexion (sans « mot de passe oublié » : un mot de passe perdu se réinitialise via l'administration WYK) */
 S.loginForm=function(host,opts){opts=opts||{};
- host.innerHTML='<div class="msg" id="lm" style="display:none" role="alert"></div><form id="lf" novalidate><div class="field"><label for="le">Email</label><input type="email" id="le" autocomplete="username" placeholder="vous@exemple.com" required></div>'+S.pwField('lp','Mot de passe','current-password')+'<button class="btn pri" style="width:100%" id="lb">'+ic('lock')+'Se connecter</button></form>';
+ host.innerHTML='<div class="msg" id="lm" style="display:none" role="alert"></div><form id="lf" novalidate><div class="field"><label for="le">ID employé</label><input type="text" id="le" autocomplete="username" autocapitalize="characters" spellcheck="false" placeholder="WYK-XXX-000" style="text-transform:uppercase;letter-spacing:.06em;font-weight:600" required></div>'+S.pwField('lp','Mot de passe','current-password')+'<button class="btn pri" style="width:100%" id="lb">'+ic('lock')+'Se connecter</button></form>';
  S.bindEyes(host);
  var msg=function(t,ok){var m=host.querySelector('#lm');m.style.display=t?'block':'none';m.className='msg'+(ok?' ok':'');m.textContent=t||''};
  var l0=S.lockLeft();if(l0>0)msg('Trop de tentatives. Réessayez dans '+Math.ceil(l0/60)+' min.');
  host.querySelector('#lf').onsubmit=async function(e){e.preventDefault();var b=host.querySelector('#lb');msg('');
-  var em=host.querySelector('#le').value.trim(),pw=host.querySelector('#lp').value;if(!em||!pw){msg('Entrez votre email et votre mot de passe.');return}
+  var id=host.querySelector('#le').value.trim(),pw=host.querySelector('#lp').value;if(!id||!pw){msg('Entrez votre ID et votre mot de passe.');return}
+  var l=S.lockLeft();if(l>0){msg('Trop de tentatives. Réessayez dans '+Math.ceil(l/60)+' min.');return}
   b.disabled=true;
-  try{await S.login(em,pw);if(opts.onDone)return opts.onDone();location.href=(await S.isAdmin())?'/admin':'/moi'}catch(x){msg(S.errMsg(x));b.disabled=false}}};
+  try{
+   var em=id;
+   /* ID employé -> compte (l'administrateur peut aussi saisir son adresse email) */
+   if(id.indexOf('@')<0){var r=await db.rpc('staff_login_email',{p_code:id});em=(r&&r.data)||'inconnu@staff.wykht.com'}
+   await S.login(em,pw);if(opts.onDone)return opts.onDone();location.href=(await S.isAdmin())?'/admin':'/moi'}catch(x){msg(S.errMsg(x));b.disabled=false}}};
 
 /* ---------- coque : en-tête, menu, pied ---------- */
 S.MENU=[['Découvrir',[['index','home','Accueil'],['info?p=apropos','users','À propos de nous'],['info?p=carrieres','brief','Carrières chez WYK']]],
@@ -113,11 +120,12 @@ S.shell=async function(active){
  var tg=function(){setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')};
  document.getElementById('themeBtn').onclick=tg;document.getElementById('thm').onclick=tg;setTheme(getTheme());
  var SSL='<span class="ssl-card"><span class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5L15.5 10"/></svg></span><span class="sc-tx"><b>Connexion sécurisée</b><small>Certificat SSL surveillé</small></span><a class="ssl-badge" href="https://sslcanary.com/en/tools/ssl-checker?host=staff.wykht.com" target="_blank" rel="noopener"><img src="https://sslcanary.com/badge/staff.wykht.com.svg" alt="SSL monitored by SSLCanary" height="28" loading="lazy" decoding="async"></a></span>';
- foot.className='foot';foot.innerHTML='<div class="wrap"><div class="fl"><a href="/info?p=confidentialite">Confidentialité</a><a href="/info?p=conditions">Conditions</a><a href="/info?p=contact">Contact</a></div>© '+new Date().getFullYear()+' WYK — Portail des profils professionnels · <a href="https://wykht.com" target="_blank" rel="noopener">wykht.com</a><div class="ssl-row">'+SSL+'</div></div>';
+ foot.className='foot';foot.innerHTML='<div class="wrap"><div class="fl"><a href="/info?p=confidentialite">Confidentialité</a><a href="/info?p=conditions">Conditions</a><a href="/info?p=contact">Contact</a><a href="mailto:contact@wykht.com">contact@wykht.com</a></div>© '+new Date().getFullYear()+' WYK — Portail des profils professionnels · <a href="https://wykht.com" target="_blank" rel="noopener">wykht.com</a><div class="ssl-row">'+SSL+'</div></div>';
  await S.getUser();
  var dyn='';if(S.user){var adm=await S.isAdmin();S.admin=adm;S.idle();
-  var em=S.user.email||'';
-  dyn='<div class="dme"><div class="av">'+esc((em[0]||'?').toUpperCase())+'</div><div style="min-width:0"><b>'+esc(em)+'</b><small>'+(adm?'Administrateur WYK':'Collaborateur WYK')+'</small></div></div>'+
+  try{S.me=await S.myProfile()}catch(e){S.me=null}
+  var em=S.me?S.me.full_name:(S.isSyn(S.user.email)?'Collaborateur WYK':(S.user.email||'')),sb=adm?'Administrateur WYK':(S.me?S.me.employee_code:'Collaborateur WYK');
+  dyn='<div class="dme"><div class="av">'+esc((em[0]||'?').toUpperCase())+'</div><div style="min-width:0"><b>'+esc(em)+'</b><small>'+esc(sb)+'</small></div></div>'+
    (adm?'<a href="/admin"><span class="ico">'+ic('grid')+'</span><span>Espace administrateur</span>'+ic('chev','chev')+'</a>':'')+'<a href="/moi"><span class="ico">'+ic('user')+'</span><span>Mon profil</span>'+ic('chev','chev')+'</a><button id="lo" class="dng"><span class="ico">'+ic('logout')+'</span><span>Se déconnecter</span></button>';
   var me=document.getElementById('meBtn');me.style.display='grid';me.href=adm?'/admin':'/moi'}
  document.getElementById('dyn').innerHTML=dyn;var lo=document.getElementById('lo');if(lo)lo.onclick=S.logout;
@@ -136,7 +144,7 @@ S.qrModal=function(o){var old=document.getElementById('qrm');if(old)old.remove()
  m.onclick=function(e){if(e.target===m||e.target.closest('.qx'))return close();var b=e.target.closest('[data-q]');if(!b)return;if(b.dataset.q==='copy')S.copy(o.url,'Lien copié');else S.share(o.url,o.title)}};
 
 /* ---------- vue d'un profil (même forme que staff_public_profile) ---------- */
-S.view=function(row,posTitle,fields,posDesc){var v={full_name:row.full_name,position:posTitle,position_desc:posDesc||null,status:row.status,verified:row.verified===true,updated_at:row.updated_at,fields:fields};
+S.view=function(row,posTitle,fields,posDesc,posIcon){var v={full_name:row.full_name,position:posTitle,position_desc:posDesc||null,position_icon:posIcon||null,badge_code:row.employee_code,status:row.status,verified:row.verified===true,updated_at:row.updated_at,fields:fields};
  var map={photo:['photo_url'],employee_id:['employee_code'],since:['activated_at'],quote:['quote'],about:['about'],location:['location'],email:['email'],phone:['phone'],languages:['languages'],skills:['skills'],experiences:['experiences'],education:['education'],links:['links'],cv:['cv_url'],birthdate:['birth_date'],birthplace:['birth_place'],nationality:['nationality']};
  Object.keys(map).forEach(function(k){if(fields.indexOf(k)>-1)map[k].forEach(function(c){v[c]=row[c]})});
  if(fields.indexOf('age')>-1){var a=S.age(row.birth_date);if(a!=null)v.age=a}return v};
@@ -192,13 +200,23 @@ S.renderProfile=function(p,o){o=o||{};var f=p.fields||[];
  var sk=function(t,b){return b?'<section><h2>'+t+'</h2>'+b+'</section>':''};
  var pci='';if(has('email'))pci+='<div><small>Email</small><span>'+h('email')+'</span></div>';if(has('phone'))pci+='<div><small>Téléphone</small><span>'+h('phone')+'</span></div>';if(has('location'))pci+='<div><small>Localisation</small><span>'+h('location')+'</span></div>';
  var pin='';if(age!=null)pin+='<div><small>Âge</small><span>'+age+' ans</span></div>';if(p.birth_date)pin+='<div><small>Né(e) le</small><span>'+esc(S.date(p.birth_date,'full'))+'</span></div>';if(has('birth_place'))pin+='<div><small>Lieu de naissance</small><span>'+h('birth_place')+'</span></div>';if(has('nationality'))pin+='<div><small>Nationalité</small><span>'+h('nationality')+'</span></div>';if(has('employee_code'))pin+='<div><small>ID employé</small><span>'+h('employee_code')+'</span></div>';if(has('activated_at'))pin+='<div><small>Actif depuis</small><span>'+esc(S.date(p.activated_at,'full'))+'</span></div>';
- var cvp='<div class="cvp"><div class="cvp-h"><div class="cvp-ph">'+(pu?'<img src="'+esc(pu)+'" alt="">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>')+'</div><div class="cvp-t"><h1>'+esc(first)+(last?' <em>'+esc(last)+'</em>':'')+'</h1><div class="r">'+esc(p.position||'')+'</div>'+(p.verified?'<span class="v">✔ Employé vérifié par WYK</span>':'')+'</div><img class="cvp-lg" src="'+LOGO_WB+'" alt="WYK"></div>'+
-  '<div class="cvp-b"><div class="cvp-l">'+sk('Contact',pci?'<div class="ci">'+pci+'</div>':'')+sk('Informations',pin?'<div class="ci">'+pin+'</div>':'')+sk('Langues',has('languages')?'<div class="ch">'+p.languages.map(function(l){return'<span>'+esc(l)+'</span>'}).join('')+'</div>':'')+sk('Compétences',has('skills')?p.skills.map(function(s){var l=Math.max(0,Math.min(100,+s.level||0));return'<div class="sk"><div><span>'+esc(s.name)+'</span><span>'+l+'%</span></div><i><b style="width:'+l+'%"></b></i></div>'}).join(''):'')+'</div>'+
+ var L=function(t,c){return Math.max(1,Math.ceil(String(t||'').length/c))},er=0,el=0;
+ if(has('about'))er+=12+L(p.about,78)*4.8;
+ if(has('experiences')){er+=12;p.experiences.forEach(function(e){er+=12.6+(e.desc?L(e.desc,78)*4.8:0)})}
+ if(has('education'))er+=12+p.education.length*13;
+ if(has('quote'))er+=12+L(p.quote,70)*4.8;
+ var nc=(has('email')?1:0)+(has('phone')?1:0)+(has('location')?1:0);if(nc)el+=10+nc*8.5;
+ var ni=(age!=null?1:0)+(p.birth_date?1:0)+(has('birth_place')?1:0)+(has('nationality')?1:0)+(has('employee_code')?1:0)+(has('activated_at')?1:0);if(ni)el+=10+ni*8.5;
+ if(has('languages'))el+=10+Math.ceil(p.languages.length/3)*6.5;
+ if(has('skills'))el+=10+p.skills.length*7.2;
+ var cz=Math.max(.6,Math.min(1,204/(Math.max(er,el)||1)));
+ var cvp='<div class="cvp"><div class="cvp-h"><div class="cvp-ph">'+(pu?'<img src="'+esc(pu)+'" alt="">':'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>')+'</div><div class="cvp-t"><h1>'+esc(first)+(last?' <em>'+esc(last)+'</em>':'')+'</h1><div class="r">'+esc(p.position||'')+'</div>'+'</div><img class="cvp-lg" src="'+LOGO_WB+'" alt="WYK"></div>'+
+  '<div class="cvp-b" style="--z:'+cz.toFixed(3)+'"><div class="cvp-l">'+sk('Contact',pci?'<div class="ci">'+pci+'</div>':'')+sk('Informations',pin?'<div class="ci">'+pin+'</div>':'')+sk('Langues',has('languages')?'<div class="ch">'+p.languages.map(function(l){return'<span>'+esc(l)+'</span>'}).join('')+'</div>':'')+sk('Compétences',has('skills')?p.skills.map(function(s){var l=Math.max(0,Math.min(100,+s.level||0));return'<div class="sk"><div><span>'+esc(s.name)+'</span><span>'+l+'%</span></div><i><b style="width:'+l+'%"></b></i></div>'}).join(''):'')+'</div>'+
   '<div class="cvp-r">'+sk('Profil',has('about')?'<p class="ab">'+h('about')+'</p>':'')+sk('Expérience professionnelle',has('experiences')?p.experiences.map(function(e){return'<div class="tt"><b>'+esc(e.role)+(e.company?' · '+esc(e.company):'')+'</b><span class="d">'+esc([e.from,e.to].filter(Boolean).join(' – '))+'</span>'+(e.desc?'<p>'+esc(e.desc)+'</p>':'')+'</div>'}).join(''):'')+sk('Formation',has('education')?p.education.map(function(e){return'<div class="tt"><b>'+esc(e.title)+'</b><span class="d">'+esc([e.school,[e.from,e.to].filter(Boolean).join(' – ')].filter(Boolean).join(' · '))+'</span></div>'}).join(''):'')+(has('quote')?'<section><h2>Devise</h2><p class="ab"><i>« '+h('quote')+' »</i></p></section>':'')+'</div></div>'+
-  '<div class="cvp-f">'+(showQr?'<div class="q" data-qr="'+esc(S.pubUrl(o.code))+'"></div>':'')+'<div><b>'+(showQr?'Profil vérifiable en ligne':'WYK STAFF')+'</b>'+(showQr?esc(S.pubUrl(o.code).replace(/^https?:\/\//,'')):'Portail des profils professionnels')+'</div><div class="rt"><b>WYK STAFF</b>Document généré le '+esc(S.dateShort(new Date()))+'</div></div></div>';
+  '<div class="cvp-f">'+(showQr?'<div class="q" data-qr="'+esc(S.pubUrl(o.code))+'"></div>':'')+'<div><b>'+(showQr?'Profil en ligne':'WYK STAFF')+'</b>'+(showQr?esc(S.pubUrl(o.code).replace(/^https?:\/\//,'')):'Portail des profils professionnels')+'</div><div class="rt"><b>WYK STAFF</b>Document généré le '+esc(S.dateShort(new Date()))+'</div></div></div>';
  return'<div class="cv" data-cv>'+side+main+'</div>'+cvp+'<p class="pf-foot">Ce profil est un espace public. Les informations sont mises à jour par l\'équipe WYK.</p>'};
 
-S.printCV=function(name){var t=document.title;document.title='CV — '+(name||'WYK');document.body.classList.remove('print-badge');var back=function(){document.title=t;removeEventListener('afterprint',back)};addEventListener('afterprint',back);window.print();setTimeout(function(){document.title=t},1500)};
+S.printCV=function(name){S.toast('Dans la fenêtre qui s\'ouvre, choisissez « Enregistrer au format PDF ».');var t=document.title;document.title='CV — '+(name||'WYK');document.body.classList.remove('print-badge');var back=function(){document.title=t;removeEventListener('afterprint',back)};addEventListener('afterprint',back);window.print();setTimeout(function(){document.title=t},1500)};
 S.bindProfile=function(root,code,name){
  root.querySelectorAll('[data-act=print],[data-act=pdf]').forEach(function(b){b.onclick=function(){S.printCV(name)}});
  root.querySelectorAll('[data-act=share]').forEach(function(b){b.onclick=function(){S.copy(S.pubUrl(code),'Lien du profil copié')}});
@@ -206,29 +224,156 @@ S.bindProfile=function(root,code,name){
  var tabs=root.querySelector('.cv-tabs');if(tabs)tabs.onclick=function(e){var t=e.target.closest('[data-tab]');if(!t)return;tabs.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===t)});root.querySelectorAll('.cv-pane').forEach(function(p){p.classList.toggle('on',p.dataset.pane===t.dataset.tab)})};
  S.hydrateQR(root)};
 
+/* ---------- icônes de poste (badge) : chemins SVG sur une grille 48×40 ---------- */
+var _c=function(x,y,r){return'M'+(x-r)+' '+y+'a'+r+' '+r+' 0 1 0 '+(2*r)+' 0a'+r+' '+r+' 0 1 0 '+(-2*r)+' 0z'};
+var _r=function(x,y,w,h,r){return'M'+(x+r)+' '+y+'h'+(w-2*r)+'a'+r+' '+r+' 0 0 1 '+r+' '+r+'v'+(h-2*r)+'a'+r+' '+r+' 0 0 1 '+(-r)+' '+r+'h'+(-(w-2*r))+'a'+r+' '+r+' 0 0 1 '+(-r)+' '+(-r)+'v'+(-(h-2*r))+'a'+r+' '+r+' 0 0 1 '+r+' '+(-r)+'z'};
+var PI=S.POS_ICONS={
+ ceo:['PDG / CEO',_r(5,3,38,34,5)+_c(24,15,5)+'M13 33c0-6 5-10 11-10s11 4 11 10M24 23l-2 4 2 4 2-4z'],
+ cto:['Technique / CTO',_r(14,10,20,20,3)+_r(20,16,8,8,1)+'M19 10V5M24 10V5M29 10V5M19 30v5M24 30v5M29 30v5M14 15H9M14 20H9M14 25H9M34 15h5M34 20h5M34 25h5'],
+ dev:['Développeur',_r(2,2,44,27,3)+'M19 11l-5 5 5 5M29 11l5 5-5 5M15 37h18M24 29v8'],
+ livreur:['Livreur',_r(3,8,15,13,2)+_c(10,31,4.5)+_c(38,31,4.5)+'M10 31h6l4-9h9l5 9M32 22l-2-9h-5M29 13h6'],
+ car:['Chauffeur',"M6 28v-8l4-9h28l4 9v8zM6 20h36"+_c(14,30,4)+_c(34,30,4)],
+ marketing:['Marketing','M6 16v8h6l16 8V8L12 16zM12 24l3 10h5l-2-8M34 14c3 2 3 10 0 12M38 10c5 4 5 16 0 20'],
+ finance:['Finance','M4 36h40M6 18l10-8 8 5 14-11M32 4h6v6M10 36V26M20 36V20M30 36V24M40 36V18'],
+ ops:['Opérations',_c(24,20,11)+_c(24,20,5)+'M24 3v6M24 31v6M7 20h6M35 20h6M12 8l4 4M32 28l4 4M12 32l4-4M32 12l4-4'],
+ support:['Support client','M8 24v-4a16 16 0 0 1 32 0v4'+_r(5,22,7,11,3)+_r(36,22,7,11,3)+'M40 33c0 4-5 5-12 5'],
+ design:['Design','M24 3l11 15-11 19L13 18z'+_c(24,17,2.5)+'M24 20v17'],
+ sales:['Commercial',_c(22,21,14)+_c(22,21,8)+_c(22,21,2)+'M23 20l14-14M31 6h6v6'],
+ rh:['Ressources humaines',_c(24,13,5)+_c(10,17,4)+_c(38,17,4)+'M14 34c0-6 4-10 10-10s10 4 10 10M3 32c0-5 3-8 7-8M45 32c0-5-3-8-7-8'],
+ logistics:['Logistique','M24 4l17 8v16l-17 8-17-8V12zM7 12l17 8 17-8M24 20v16M15.5 8l17 8'],
+ security:['Sécurité','M24 3l16 6v10c0 10-7 16-16 18C15 35 8 29 8 19V9zM17 20l5 5 9-10'],
+ data:['Données','M10 9c0 3 6 5 14 5s14-2 14-5-6-5-14-5-14 2-14 5zM10 9v22c0 3 6 5 14 5s14-2 14-5V9M10 20c0 3 6 5 14 5s14-2 14-5'],
+ comm:['Communication','M6 5h36a2 2 0 0 1 2 2v20a2 2 0 0 1-2 2H22l-9 8v-8H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM13 13h22M13 20h14'],
+ social:['Réseaux sociaux','M24 35S6 24 6 13a9 9 0 0 1 18-3 9 9 0 0 1 18 3c0 11-18 22-18 22z'],
+ quality:['Qualité',_c(24,16,11)+'M18 26l-4 11 10-5 10 5-4-11M19 16l4 4 7-8'],
+ legal:['Juridique','M24 4v32M12 36h24M8 11h32M8 11l-5 13a5 5 0 0 0 10 0zM40 11l-5 13a5 5 0 0 0 10 0z'],
+ formation:['Formation','M2 15l22-10 22 10-22 10zM12 20v10c0 3 6 6 12 6s12-3 12-6V20M46 15v12'],
+ admin:['Administration',_r(10,6,28,31,3)+'M18 6V4h12v2M16 16h16M16 23h16M16 30h10'],
+ manager:['Direction / Manager','M5 30l-2-18 12 9 9-14 9 14 12-9-2 18zM7 35h34'],
+ shop:['Vente / Caisse','M8 12h32l-2 24H10zM16 12V9a8 8 0 0 1 16 0v3'],
+ star:['Général','M24 3l6 12 13 2-9.5 9 2.3 13L24 33l-11.8 6 2.3-13L5 17l13-2z']
+};
+var AUTO=[['ceo',/\b(ceo|pdg|directeur general|directrice generale|fondateur|fondatrice|president|presidente)\b/],['cto',/\b(cto|dsi|architecte)\b|directeur technique|directrice technique|technique/],['dev',/(develop|\bdev\b|programm|ingenieur|software|\bweb|codeur|informatique|\bit\b|application)/],['livreur',/(livr|coursier|delivery|moto|expedi|courrier)/],['car',/(chauffeur|driver|conduct|transport)/],['marketing',/(market|publicit|brand|promotion)/],['finance',/(\bcfo\b|financ|compta|tresor|caisse|paie)/],['ops',/(\bcoo\b|operation|exploitation|production)/],['support',/(support|service client|relation client|assistan|hotline|accueil)/],['design',/(design|graphi|\bui\b|\bux\b|creatif|createur|photograph|video|montage)/],['sales',/(commerc|vente|vendeur|sales|business|prospect)/],['rh',/(\brh\b|ressources humaines|recrut|personnel|talent)/],['logistics',/(logisti|stock|entrepot|magasin|inventaire|preparat)/],['security',/(securit|gardien|agent de|surveill)/],['data',/(\bdata|donnee|analys|statisti)/],['comm',/(communic|presse|relations publiques|redact|contenu)/],['social',/(community|social|reseau|influen)/],['quality',/(qualit|controle|audit)/],['legal',/(jurid|legal|droit|avocat|conformite)/],['formation',/(formateur|formatrice|formation|training|enseign)/],['admin',/(admin|secretar|bureau|office|gestion)/],['manager',/(manager|directeur|directrice|responsable|chef|\blead\b|coordinat|superviseur)/]];
+/* icône d'un poste : choix de l'admin, sinon détectée automatiquement d'après l'intitulé */
+S.posIcon=function(title,explicit){if(explicit&&PI[explicit])return explicit;var t=String(title||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');for(var i=0;i<AUTO.length;i++)if(AUTO[i][1].test(t))return AUTO[i][0];return'star'};
+S.posIconSvg=function(key,cls){var d=(PI[key]||PI.star)[1];return'<svg class="pic'+(cls?' '+cls:'')+'" viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+d+'"/></svg>'};
+/* sélecteur d'icône (administration) : grille de boutons + champ caché */
+S.iconPicker=function(val,cls){return'<div class="ipick '+(cls||'')+'" data-ipick><input type="hidden" data-f="icon" value="'+esc(val||'')+'"><button type="button" class="ipk'+(val?'':' on')+'" data-k="" title="Automatique (selon l\'intitulé)"><span>Auto</span></button>'+Object.keys(PI).map(function(k){return'<button type="button" class="ipk'+(val===k?' on':'')+'" data-k="'+k+'" title="'+esc(PI[k][0])+'">'+S.posIconSvg(k)+'</button>'}).join('')+'</div>'};
+S.bindIconPickers=function(root){root.addEventListener('click',function(e){var b=e.target.closest('.ipk');if(!b)return;var h=b.closest('[data-ipick]');h.querySelector('[data-f=icon]').value=b.dataset.k;h.querySelectorAll('.ipk').forEach(function(x){x.classList.toggle('on',x===b)})})};
+
 /* ================= BADGE animé (carte d'identité) ================= */
 S.badgeCard=function(p,o){o=o||{};var np=nameParts(p.full_name),first=np.first||p.full_name||'',last=np.last;
  var nl=Math.max(first.length,last.length),nz=nl<=8?6:nl<=10?5.3:nl<=13?4.5:nl<=17?3.8:3.2;
  var pu=p.photo_url?S.safeUrl(p.photo_url):'';
  var photo=pu?'<img src="'+esc(pu)+'" alt="'+esc(p.full_name)+'">':'<svg class="sil" viewBox="0 0 100 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="100" height="120" fill="#c9cbd1"/><circle cx="50" cy="44" r="19" fill="#0b0b0c"/><path d="M10 120c0-27 17-40 40-40s40 13 40 40z" fill="#0b0b0c"/></svg>';
- var desc=p.position_desc?'<div class="bdg-desc"><span class="ci"><svg viewBox="0 0 48 40"><rect x="2" y="2" width="44" height="27" rx="3"/><path d="M19 11l-5 5 5 5M29 11l5 5-5 5M15 37h18M24 29v8"/></svg></span><i></i><p>'+esc(p.position_desc)+'</p></div>':'';
- var id=p.employee_code?'<div class="bdg-id">ID · '+esc(p.employee_code)+(p.verified?'<span class="bdg-vf"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg>Vérifié</span>':'')+'</div>':(p.verified?'<div class="bdg-id"><span class="bdg-vf" style="margin-left:0"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg>Employé vérifié par WYK</span></div>':'');
+ var ik=S.posIcon(p.position,p.position_icon);
+ var desc='<div class="bdg-desc"><span class="ci">'+S.posIconSvg(ik)+'</span>'+(p.position_desc?'<i></i><p>'+esc(p.position_desc)+'</p>':'')+'</div>';
+ var code=p.badge_code||p.employee_code;
+ var id=code?'<div class="bdg-id"><small>ID</small><b>'+esc(code)+'</b></div>':'';
  var qr=o.code&&!o.noQr?'<div class="bdg-qr" data-qr="'+esc(S.badgeUrl(o.code))+'" role="button" tabindex="0" aria-label="Agrandir le QR code"></div>':'';
- return'<div class="bdg-wrap"><div class="bdg" data-bdg style="--nz:'+nz+'cqw;--nzp:'+(nz*2.05).toFixed(1)+'cqw"><div class="bdg-in">'+
+ return'<div class="bdg-wrap"><div class="bdg" data-bdg style="--nz:'+nz+'cqw"><div class="bdg-in">'+
   '<div class="bdg-art"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="gy"></i></div>'+
   '<div class="bdg-main"><div class="bdg-top"><img src="'+LOGO_WB+'" alt="WYK"><i></i><div class="bdg-tag">Faites vos achats autrement</div></div>'+
-  '<div class="bdg-name"><span>'+esc(first)+'</span>'+(last?'<em>'+esc(last)+'</em>':'')+'</div><div class="bdg-pos">'+esc(p.position||'Équipe WYK')+'</div><div class="bdg-line"></div>'+desc+id+'</div>'+
+  '<div class="bdg-name"><span>'+esc(first)+'</span>'+(last?'<em>'+esc(last)+'</em>':'')+'</div><div class="bdg-pos">'+esc(p.position||'Équipe WYK')+'</div><div class="bdg-lr"><div class="bdg-line"></div>'+id+'</div>'+desc+'</div>'+
   '<div class="bdg-photo">'+photo+'</div>'+qr+'<div class="bdg-sig" aria-hidden="true">WYK</div>'+
   '<div class="bdg-foot"><span class="gl"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20"/><path d="M4 24h40M24 4c8 8 8 32 0 40M24 4c-8 8-8 32 0 40M8 14h32M8 34h32"/></svg></span><b>wykht.com</b><i></i><span>Connecter les gens, soutenir l\'économie locale.</span></div>'+
   '</div><div class="bdg-glare"></div></div></div>'};
-S.bindBadge=function(root,o){o=o||{};var b=root.querySelector('[data-bdg]');if(!b)return;var host=b.parentNode;
- var fit=function(){b.classList.toggle('nr',host.clientWidth<560)};fit();
- if(window.ResizeObserver)new ResizeObserver(fit).observe(host);else addEventListener('resize',fit);
+S.bindBadge=function(root,o){o=o||{};var b=root.querySelector('[data-bdg]');if(!b)return;
  b.addEventListener('pointermove',function(e){var r=b.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;b.style.setProperty('--ry',((x-.5)*9).toFixed(2)+'deg');b.style.setProperty('--rx',((.5-y)*7).toFixed(2)+'deg');b.style.setProperty('--gx',(x*100).toFixed(0)+'%');b.style.setProperty('--gy',(y*100).toFixed(0)+'%')});
  b.addEventListener('pointerleave',function(){b.style.setProperty('--rx','0deg');b.style.setProperty('--ry','0deg')});
  var q=b.querySelector('.bdg-qr');if(q){var open=function(){S.qrModal({url:S.badgeUrl(o.code),title:o.name||'Badge WYK',sub:'Scannez ce code pour ouvrir le badge en ligne.',extra:'<a class="btn sm" href="/profil?id='+encodeURIComponent(o.code)+'">'+ic('user')+'Voir le profil</a>'})};q.onclick=open;q.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}}}
  S.hydrateQR(b)};
-S.printBadge=function(){document.body.classList.add('print-badge');var back=function(){document.body.classList.remove('print-badge');removeEventListener('afterprint',back)};addEventListener('afterprint',back);window.print();setTimeout(function(){document.body.classList.remove('print-badge')},2000)};
+
+/* ---------- export du badge : image PNG et PDF à la forme exacte (dessiné à 1920×1080, sans aucune mention « vérifié ») ---------- */
+S.loadImg=function(u){var one=function(src){return new Promise(function(ok){var i=new Image();i.crossOrigin='anonymous';i.onload=function(){ok(i)};i.onerror=function(){ok(null)};i.src=src})};
+ if(!u)return Promise.resolve(null);var bust=u+(u.indexOf('?')>-1?'&':'?')+'wykcors=1';return one(bust).then(function(i){return i||one(u)})};
+S.badgeCanvas=async function(p,o){o=o||{};var W=1920,H=1080,u=W/100,cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d');
+ try{await Promise.all([document.fonts.load('800 40px "Bricolage Grotesque"'),document.fonts.load('600 40px "Bricolage Grotesque"'),document.fonts.load('600 40px Caveat'),document.fonts.load('500 20px Inter'),document.fonts.load('700 20px Inter')])}catch(e){}
+ var pu=p.photo_url?S.safeUrl(p.photo_url):'';
+ var im=await Promise.all([S.loadImg(LOGO_WB),S.loadImg(pu),o.code?S.loadQR():0]);var logo=im[0],ph=im[1];
+ var FD='"Bricolage Grotesque",Inter,system-ui,sans-serif',FB='Inter,system-ui,sans-serif',FC='Caveat,"Brush Script MT",cursive';
+ var np=nameParts(p.full_name),first=np.first||p.full_name||'',last=np.last,nl=Math.max(first.length,last.length),nz=nl<=8?6:nl<=10?5.3:nl<=13?4.5:nl<=17?3.8:3.2;
+ var rr=function(a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()};
+ var fnt=function(w,sz,f){x.font=w+' '+sz+'px '+f};
+ var mw=function(t,ls){return x.measureText(t).width+ls*Math.max(0,t.length-1)};
+ var tx=function(t,a,b,ls){x.textBaseline='middle';x.textAlign='left';if(!ls){x.fillText(t,a,b);return}var c=a;for(var i=0;i<t.length;i++){x.fillText(t[i],c,b);c+=x.measureText(t[i]).width+ls}};
+ var wrap=function(t,maxW,ls){var ws=String(t).split(/\s+/),ln=[],cur='';ws.forEach(function(w){var tr=cur?cur+' '+w:w;if(mw(tr,ls)>maxW&&cur){ln.push(cur);cur=w}else cur=tr});if(cur)ln.push(cur);return ln};
+ x.scale(u,u);x.save();rr(0,0,100,56.25,2.2);x.clip();x.fillStyle='#fff';x.fillRect(0,0,100,56.25);
+ /* panneau noir + bandes rouges */
+ x.save();x.beginPath();x.moveTo(58+.19*42,0);x.lineTo(100,0);x.lineTo(100,56.25);x.lineTo(58,56.25);x.closePath();x.clip();
+ x.fillStyle='#0a0a0b';x.fillRect(58,0,42,56.25);
+ var g=x.createRadialGradient(93.7,5.6,0,93.7,5.6,28);g.addColorStop(0,'rgba(232,25,44,.45)');g.addColorStop(1,'rgba(232,25,44,0)');x.fillStyle=g;x.fillRect(58,0,42,56.25);
+ x.save();x.translate(60,-1);x.rotate(46*Math.PI/180);g=x.createLinearGradient(0,0,62,0);g.addColorStop(0,'#8a0a14');g.addColorStop(.5,'#e8192c');g.addColorStop(1,'#ff3a4a');x.fillStyle=g;x.shadowColor='rgba(232,25,44,.55)';x.shadowBlur=3*u;x.fillRect(0,0,62,6.6);x.restore();
+ var band=function(by,h,al){x.save();x.globalAlpha=al;x.translate(106,by);x.rotate(-46*Math.PI/180);var gg=x.createLinearGradient(0,0,-70,0);gg.addColorStop(0,'#ff1a2e');gg.addColorStop(.7,'#a90c1b');gg.addColorStop(1,'rgba(169,12,27,0)');x.fillStyle=gg;x.fillRect(-70,-h,70,h);x.restore()};
+ band(56.25-11,3.2,.95);band(56.25-4.5,5.4,.9);
+ x.save();x.globalAlpha=.09;x.fillStyle='#fff';x.translate(78,20);x.scale(26,26);x.beginPath();[[0,0],[.28,0],[.5,.4],[.72,0],[1,0],[.6,.62],[.6,1],[.4,1],[.4,.62]].forEach(function(q,i){i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1])});x.closePath();x.fill();x.restore();
+ x.restore();
+ /* colonne de gauche : mise en page centrée verticalement */
+ var Y0=2.2,AH=56.25-9.6-2.2,logoH=11,logoW=logo?logoH*logo.naturalWidth/logo.naturalHeight:15;
+ fnt(600,2.3,FD);var tag=wrap('Faites vos achats autrement',20,0),tagLH=2.3*1.15,topH=Math.max(logoH,tag.length*tagLH);
+ var nls=-.035*nz;fnt(800,nz,FD);var nameL=wrap(first,56,nls).map(function(t){return[t,'#0d0e11']}).concat(last?wrap(last,56,nls).map(function(t){return[t,'#e8192c']}):[]),nameLH=nz*.98;
+ var posT=String(p.position||'Équipe WYK').toUpperCase(),pls=.17*2.1;fnt(800,2.1,FD);var posL=wrap(posT,44,pls),posLH=2.1*1.32;
+ var code=p.badge_code||p.employee_code,lrH=code?3.4:.42;
+ var dtxt=p.position_desc||'',dLH=1.55*1.36;fnt(500,1.55,FB);var dL=dtxt?wrap(dtxt,33,0):[],dH=Math.max(4.7,dL.length*dLH);
+ var total=topH+1.1+nameL.length*nameLH+1+posL.length*posLH+1.1+lrH+1.2+dH,y=Y0+Math.max(0,(AH-total)/2);
+ /* haut : logo | accroche */
+ var cy=y+topH/2,lx=3.6;
+ if(logo)x.drawImage(logo,lx,cy-logoH/2,logoW,logoH);else{fnt(800,7,FD);x.fillStyle='#0d0e11';tx('WYK',lx,cy,0)}
+ var dx=lx+logoW+2.4;x.fillStyle='#e8192c';x.fillRect(dx,cy-4,.2,8);
+ fnt(600,2.3,FD);x.fillStyle='#16181d';var ty=cy-tag.length*tagLH/2+tagLH/2;tag.forEach(function(t,i){tx(t,dx+2.4,ty+i*tagLH,0)});
+ y+=topH+1.1;
+ /* nom */
+ fnt(800,nz,FD);nameL.forEach(function(l,i){x.fillStyle=l[1];tx(l[0],3.6,y+nameLH*i+nameLH/2,nls)});y+=nameL.length*nameLH+1;
+ /* poste */
+ fnt(800,2.1,FD);x.fillStyle='#0d0e11';posL.forEach(function(t,i){tx(t,3.6,y+posLH*i+posLH/2,pls)});y+=posL.length*posLH+1.1;
+ /* trait rouge + ID */
+ var ly=y+lrH/2;x.fillStyle='#e8192c';rr(3.6,ly-.21,7.6,.42,.2);x.fill();
+ if(code){var bx=3.6+7.6+2;fnt(700,1.6,FB);var ls=.08*1.6,w1=mw('ID',ls),w2=mw(code,ls),cw=1.4+w1+1+w2+1.4;
+  x.strokeStyle='#e8192c';x.lineWidth=.16;rr(bx,ly-1.7,cw,3.4,.8);x.stroke();x.fillStyle='#e8192c';tx('ID',bx+1.4,ly+.05,ls);x.fillStyle='#14161c';tx(code,bx+1.4+w1+1,ly+.05,ls)}
+ y+=lrH+1.2;
+ /* icône du poste + description */
+ var ik=S.posIcon(p.position,p.position_icon);x.save();x.translate(3.6,y);x.scale(5.6/48,5.6/48);x.lineWidth=2;x.lineCap='round';x.lineJoin='round';x.strokeStyle='#e8192c';x.stroke(new Path2D((PI[ik]||PI.star)[1]));x.restore();
+ if(dL.length){x.fillStyle='#e8192c';x.fillRect(3.6+5.6+1.6,y,.14,dH);fnt(500,1.55,FB);x.fillStyle='#2a2d35';dL.forEach(function(t,i){tx(t,3.6+5.6+1.6+.14+1.6,y+dLH*i+dLH/2,0)})}
+ /* photo */
+ x.save();x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=4*u;x.shadowOffsetY=1.6*u;x.fillStyle='#cfd1d6';rr(55.4,9,27,30.6,2.1);x.fill();x.restore();
+ x.save();rr(55.4,9,27,30.6,2.1);x.clip();
+ if(ph){var sc=Math.max(27/ph.naturalWidth,30.6/ph.naturalHeight),w=ph.naturalWidth*sc,h=ph.naturalHeight*sc;x.drawImage(ph,55.4+(27-w)/2,9+(30.6-h)/2,w,h)}
+ else{x.fillStyle='#c9cbd1';x.fillRect(55.4,9,27,30.6);x.fillStyle='#0b0b0c';x.translate(55.4,9-.9);x.scale(.27,.27);x.beginPath();x.arc(50,44,19,0,7);x.fill();x.fill(new Path2D('M10 120c0-27 17-40 40-40s40 13 40 40z'))}
+ x.restore();x.strokeStyle='rgba(232,25,44,.18)';x.lineWidth=.5;rr(55.4-.4,9-.4,27.8,31.4,2.4);x.stroke();
+ x.strokeStyle='#e8192c';x.lineWidth=.38;rr(55.4+.19,9+.19,27-.38,30.6-.38,1.95);x.stroke();
+ /* QR en bas à droite */
+ if(o.code&&window.qrcode){var qx=83.2,qy=30.25,qs=15;x.save();x.shadowColor='rgba(0,0,0,.4)';x.shadowBlur=3*u;x.shadowOffsetY=1*u;x.fillStyle='#fff';rr(qx,qy,qs,qs,1.6);x.fill();x.restore();x.strokeStyle='#e8192c';x.lineWidth=.28;rr(qx+.14,qy+.14,qs-.28,qs-.28,1.5);x.stroke();
+  var q=window.qrcode(0,'M');q.addData(S.badgeUrl(o.code));q.make();var n=q.getModuleCount(),pad=1.1+.28,m=(qs-2*pad)/n;x.fillStyle='#0b0b0c';for(var r=0;r<n;r++)for(var c=0;c<n;c++)if(q.isDark(r,c))x.fillRect(qx+pad+c*m,qy+pad+r*m,m+.03,m+.03)}
+ /* signature */
+ fnt(600,6,FC);var sw=x.measureText('WYK').width;x.save();x.translate(64+sw/2,39.6+3);x.rotate(-9*Math.PI/180);x.shadowColor='rgba(0,0,0,.4)';x.shadowBlur=1*u;x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';x.fillText('WYK',0,0);x.restore();
+ x.save();x.translate(64+sw/2,39.6+3);x.rotate(-9*Math.PI/180);x.translate(0,4.05);x.rotate(3*Math.PI/180);var ux=-sw/2-.12*sw,uw=sw*1.26;g=x.createLinearGradient(ux,0,ux+uw,0);g.addColorStop(0,'rgba(232,25,44,0)');g.addColorStop(.25,'#e8192c');g.addColorStop(1,'#ff4a5a');x.fillStyle=g;rr(ux,-.25,uw,.5,.25);x.fill();x.restore();
+ /* pied noir */
+ x.fillStyle='#0a0a0b';x.fillRect(0,56.25-9.6,100,9.6);var fy=56.25-9.6/2;
+ x.save();x.translate(3.6,fy-2.6);x.scale(5.2/48,5.2/48);x.lineWidth=2.2;x.strokeStyle='#e8192c';x.lineCap='round';x.beginPath();x.arc(24,24,20,0,7);x.stroke();x.stroke(new Path2D('M4 24h40M24 4c8 8 8 32 0 40M24 4c-8 8-8 32 0 40M8 14h32M8 34h32'));x.restore();
+ fnt(600,2.7,FD);x.fillStyle='#fff';var fx=3.6+5.2+2.4;tx('wykht.com',fx,fy,-.027);var fw=mw('wykht.com',-.027);
+ x.fillStyle='rgba(255,255,255,.7)';x.fillRect(fx+fw+2.4,fy-2.8,.16,5.6);
+ fnt(500,1.5,FB);x.fillStyle='#d8d9de';var fl=wrap("CONNECTER LES GENS, SOUTENIR L'ÉCONOMIE LOCALE.",34,.3),flh=1.5*1.55;fl.forEach(function(t,i){tx(t,fx+fw+2.4+.16+2.4,fy-fl.length*flh/2+flh/2+i*flh,.3)});
+ x.restore();return cv};
+S.save=function(blob,name){var a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download=name;a.style.display='none';document.body.appendChild(a);a.click();setTimeout(function(){a.remove();URL.revokeObjectURL(url)},4000)};
+S.pdfFromJpeg=function(jpg,w,h){var pw=841.89,ph=+(pw*h/w).toFixed(2),enc=new TextEncoder(),parts=[],len=0,off=[];
+ var add=function(d){var b=typeof d==='string'?enc.encode(d):d;parts.push(b);len+=b.length},pad=function(n){return String(n).padStart(10,'0')};
+ add('%PDF-1.4\n');
+ off[1]=len;add('1 0 obj\n<</Type/Catalog/Pages 2 0 R>>\nendobj\n');
+ off[2]=len;add('2 0 obj\n<</Type/Pages/Kids[3 0 R]/Count 1>>\nendobj\n');
+ off[3]=len;add('3 0 obj\n<</Type/Page/Parent 2 0 R/MediaBox[0 0 '+pw+' '+ph+']/Resources<</XObject<</Im0 4 0 R>>>>/Contents 5 0 R>>\nendobj\n');
+ off[4]=len;add('4 0 obj\n<</Type/XObject/Subtype/Image/Width '+w+'/Height '+h+'/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length '+jpg.length+'>>\nstream\n');add(jpg);add('\nendstream\nendobj\n');
+ var cs='q '+pw+' 0 0 '+ph+' 0 0 cm /Im0 Do Q';off[5]=len;add('5 0 obj\n<</Length '+cs.length+'>>\nstream\n'+cs+'\nendstream\nendobj\n');
+ var xr=len,t='xref\n0 6\n0000000000 65535 f \n';for(var i=1;i<=5;i++)t+=pad(off[i])+' 00000 n \n';
+ add(t+'trailer\n<</Size 6/Root 1 0 R>>\nstartxref\n'+xr+'\n%%EOF');return new Blob(parts,{type:'application/pdf'})};
+S.downloadBadge=async function(p,o,kind){S.toast('Préparation du badge…');
+ try{var cv=await S.badgeCanvas(p,o),nm='Badge-WYK-'+String(p.full_name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  if(kind==='pdf'){var wc=document.createElement('canvas');wc.width=cv.width;wc.height=cv.height;var c2=wc.getContext('2d');c2.fillStyle='#fff';c2.fillRect(0,0,wc.width,wc.height);c2.drawImage(cv,0,0);
+   var jb=await new Promise(function(r){wc.toBlob(r,'image/jpeg',.95)}),jpg=new Uint8Array(await jb.arrayBuffer());S.save(S.pdfFromJpeg(jpg,wc.width,wc.height),nm+'.pdf')}
+  else{var pb=await new Promise(function(r){cv.toBlob(r,'image/png')});S.save(pb,nm+'.png')}
+  S.toast(kind==='pdf'?'Badge PDF téléchargé':'Image du badge téléchargée')}catch(e){S.toast('Téléchargement impossible, réessayez.',1)}};
+/* boutons de téléchargement du badge */
+S.badgeDlHtml=function(){return'<button class="btn pri" data-dl="png">'+ic('dl')+'Enregistrer l\'image</button><button class="btn" data-dl="pdf">'+ic('doc')+'Télécharger en PDF</button>'};
+S.bindBadgeDl=function(root,p,o){root.querySelectorAll('[data-dl]').forEach(function(b){b.onclick=function(){S.downloadBadge(p,o,b.dataset.dl)}})};
 
 /* ---------- complétion du profil ---------- */
 S.completeness=function(r){var c=[r.photo_url,r.about,r.phone,r.email,r.location,r.birth_date,(r.languages||[]).length,(r.skills||[]).length,(r.experiences||[]).length,(r.education||[]).length],n=c.filter(Boolean).length;return Math.round(n/c.length*100)};

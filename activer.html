@@ -2,7 +2,7 @@
 <html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://byrklytqoucdskzvcoau.supabase.co wss://byrklytqoucdskzvcoau.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"><meta name="referrer" content="strict-origin-when-cross-origin"><meta name="color-scheme" content="light dark">
 <title>Activer mon profil — WYK STAFF</title><meta name="robots" content="noindex, nofollow, noarchive">
-<link rel="icon" href="https://i.postimg.cc/150DzRjK/Logo-wyk-avec-fond-blanc.png">
+<link rel="icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Caveat:wght@600&display=swap">
 <link rel="stylesheet" href="/staff.css">
@@ -17,8 +17,7 @@
     <h3 id="h2"></h3>
     <div class="nm-in" style="padding:16px;margin-bottom:18px"><div class="small mut">Poste confirmé</div><b id="pos" style="font-family:var(--fd);font-size:20px"></b><div class="small mut" id="cat"></div></div>
     <div class="msg" id="m2" style="display:none" role="alert"></div>
-    <div class="tabs" id="tb" style="padding:0 0 14px"><button class="tab on" data-t="new">Créer mon compte</button><button class="tab" data-t="old">J'ai déjà un compte</button></div>
-    <form id="f2" novalidate>
+        <form id="f2" novalidate>
       <div class="field"><label for="nm">Nom complet</label><input id="nm" autocomplete="name" placeholder="Prénom Nom" required></div>
       <div class="row">
         <div class="field"><label for="bd">Date de naissance <span class="vis priv">facultatif</span></label><input id="bd" type="date" autocomplete="bday" min="1900-01-01"></div>
@@ -28,8 +27,8 @@
       </div>
       <div class="ageline" id="ageln" style="display:none"></div>
       <p class="small mut" style="margin:-4px 0 18px;line-height:1.5">Votre âge est calculé automatiquement à partir de votre date de naissance. L'administration WYK décide ce qui est visible publiquement : rien n'est affiché sans son autorisation.</p>
-      <div class="field" id="fe"><label for="em">Email</label><input id="em" type="email" autocomplete="username" required></div>
-      <div id="fp"><div class="field" style="margin-bottom:6px"><label for="pw">Mot de passe</label><div class="pwf"><input type="password" id="pw" minlength="8" autocomplete="new-password" required><button type="button" class="eye" data-eye="pw" aria-label="Afficher le mot de passe"></button></div><div class="meter" id="mt"><i></i></div><span class="small mut" id="mtx">8 caractères minimum, avec une lettre et un chiffre.</span></div><div style="height:12px"></div></div>
+      <div class="field" id="fe"><label for="em">Email de contact <span class="vis priv">facultatif</span></label><input id="em" type="email" autocomplete="email" placeholder="vous@exemple.com"><span class="small mut">Ce n'est pas votre identifiant de connexion. Votre ID employé vous sera attribué à la fin de l'inscription : vous vous connecterez avec cet ID et votre mot de passe.</span></div>
+      <div id="fp"><div class="field" style="margin-bottom:6px"><label for="pw">Choisissez un mot de passe</label><div class="pwf"><input type="password" id="pw" minlength="8" autocomplete="new-password" required><button type="button" class="eye" data-eye="pw" aria-label="Afficher le mot de passe"></button></div><div class="meter" id="mt"><i></i></div><span class="small mut" id="mtx">8 caractères minimum, avec une lettre et un chiffre.</span></div><div style="height:12px"></div></div>
       <label class="chk"><input type="checkbox" id="ok" required><span>J'ai lu et j'accepte la <a href="/info?p=confidentialite" target="_blank" rel="noopener">politique de confidentialité</a> et les <a href="/info?p=conditions" target="_blank" rel="noopener">conditions d'utilisation</a>.</span></label>
       <button class="btn pri" style="width:100%" id="b2"></button>
     </form>
@@ -40,7 +39,7 @@
 <script src="/staff.js"></script>
 <script>
 (async function(){
-  var $=function(i){return document.getElementById(i)},mode='new',code='';
+  var $=function(i){return document.getElementById(i)},code='';
   $('h1').innerHTML=S.ic('key')+'Confirmer mon code';$('h2').innerHTML=S.ic('check')+'Créer mon profil';$('b2').innerHTML=S.ic('check')+'Confirmer et continuer';
   document.querySelector('[data-eye=pw]').innerHTML=S.ic('eye');S.bindEyes($('f2'));
   $('bd').max=S.today();
@@ -52,32 +51,31 @@
     if(r.error||!r.data||!r.data.valid){show('m1',(r.data&&r.data.reason)||'Vérification impossible, réessayez.');return}
     code=c.trim().toUpperCase();$('code').value=code;$('s1').style.display='none';$('s2').style.display='block';
     $('pos').textContent=r.data.position||'Collaborateur WYK';$('cat').textContent=r.data.category?'Catégorie : '+r.data.category:'';
-    if(user){$('tb').style.display='none';$('fe').style.display='none';$('fp').style.display='none';$('em').required=false;$('pw').required=false}
+    if(user){$('fe').style.display='none';$('fp').style.display='none';$('pw').required=false}
   }
   $('f1').onsubmit=function(e){e.preventDefault();check($('code').value)};
   var c0=S.q('code');if(c0){$('code').value=c0.toUpperCase();check(c0)}
   $('bd').oninput=function(){var a=S.age($('bd').value),l=$('ageln');if(a==null){l.style.display='none';return}l.style.display='flex';l.innerHTML='Âge : <b>'+a+' ans</b> <span class="mut">— calculé automatiquement</span>'};
   var strength=function(v){var s=0;if(v.length>=8)s++;if(/[a-zA-Z]/.test(v)&&/\d/.test(v))s++;if(v.length>=12)s++;if(/[^a-zA-Z0-9]/.test(v))s++;return s};
   $('pw').oninput=function(){var s=strength($('pw').value),i=$('mt').firstChild;i.style.width=(s*25)+'%';i.style.background=s<2?'var(--bad)':s<3?'var(--warn)':'var(--ok)'};
-  $('tb').onclick=function(e){var b=e.target.closest('[data-t]');if(!b)return;mode=b.dataset.t;[].forEach.call($('tb').children,function(x){x.classList.toggle('on',x===b)});$('pw').autocomplete=mode==='new'?'new-password':'current-password';$('mt').style.display=$('mtx').style.display=mode==='new'?'':'none'};
   $('f2').onsubmit=async function(e){e.preventDefault();show('m2','');var name=$('nm').value.trim();
     if(!name){show('m2','Entrez votre nom complet.');return}
     var bd=$('bd').value;if(bd&&(bd>S.today()||bd<'1900-01-01')){show('m2','Date de naissance invalide.');return}
     if(!user){
-      if(!S.validEmail($('em').value.trim())){show('m2','Email invalide.');return}
-      if(mode==='new'&&strength($('pw').value)<2){show('m2','Mot de passe trop faible : 8 caractères minimum, avec au moins une lettre et un chiffre.');return}
+      var ce=$('em').value.trim();if(ce&&!S.validEmail(ce)){show('m2','Email de contact invalide.');return}
+      if(strength($('pw').value)<2){show('m2','Mot de passe trop faible : 8 caractères minimum, avec au moins une lettre et un chiffre.');return}
     }
     if(!$('ok').checked){show('m2','Veuillez accepter la politique de confidentialité et les conditions d\'utilisation.');return}
-    var extra={birth_date:bd||null,birth_place:$('bp').value.trim()||null,nationality:$('na').value.trim()||null,phone:$('ph').value.trim()||null};
+    var extra={email:$('em').value.trim()||null,birth_date:bd||null,birth_place:$('bp').value.trim()||null,nationality:$('na').value.trim()||null,phone:$('ph').value.trim()||null};
     $('b2').disabled=true;
     try{
       if(!user){
-        if(mode==='new'){
-          var r=await S.db.auth.signUp({email:$('em').value.trim(),password:$('pw').value,options:{data:{full_name:name}}});
-          if(r.error)throw r.error;
-          if(!r.data.session){S.setPending({code:code,name:name,extra:extra});show('m2','Compte créé. Confirmez votre email grâce au lien reçu, puis connectez-vous : votre profil sera créé automatiquement.',true);$('b2').style.display='none';return}
-          S.user=r.data.user;
-        }else{S.setPending({code:code,name:name,extra:extra});await S.login($('em').value.trim(),$('pw').value);location.href='/moi?bienvenue=1';return}
+        /* compte technique : l'identifiant de connexion sera l'ID employé attribué ensuite (aucun email requis) */
+        var rb=new Uint8Array(12);crypto.getRandomValues(rb);var tech='staff-'+Array.prototype.map.call(rb,function(b){return('0'+b.toString(16)).slice(-2)}).join('')+'@staff.wykht.com';
+        var r=await S.db.auth.signUp({email:tech,password:$('pw').value,options:{data:{full_name:name}}});
+        if(r.error)throw r.error;
+        if(!r.data.session){show('m2','Inscription momentanément indisponible. Contactez l\'administration WYK (contact@wykht.com).');$('b2').disabled=false;return}
+        S.user=r.data.user;
       }
       var rr=await S.db.rpc('staff_redeem_invite',{p_code:code,p_full_name:name});
       if(rr.error)throw rr.error;

@@ -2,7 +2,7 @@
 <html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://byrklytqoucdskzvcoau.supabase.co wss://byrklytqoucdskzvcoau.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"><meta name="referrer" content="strict-origin-when-cross-origin"><meta name="color-scheme" content="light dark">
 <title>Mon profil — WYK STAFF</title><meta name="robots" content="noindex, nofollow, noarchive">
-<link rel="icon" href="https://i.postimg.cc/150DzRjK/Logo-wyk-avec-fond-blanc.png">
+<link rel="icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Caveat:wght@600&display=swap">
 <link rel="stylesheet" href="/staff.css">
@@ -29,7 +29,7 @@
   function paint(){
     var code=S.idOf(row),pub=S.pubUrl(code),bu=S.badgeUrl(code),F=fieldsOf(row),pos=posOf(row),age=S.age(row.birth_date),pc=S.completeness(row);
     var banner=locked(row)?'<div class="msg">Votre profil est <b>'+esc(S.STATUS[row.status].toLowerCase())+'</b> : il n\'est plus visible et ne peut pas être modifié. Contactez WYK pour plus d\'informations.</div>':(row.status==='inactive'?'<div class="msg">Votre profil est inactif : il n\'est pas visible publiquement.</div>':'');
-    root.innerHTML=(S.q('bienvenue')?'<div class="msg ok">Bienvenue chez WYK ! Complétez votre profil ci-dessous : photo, parcours, compétences.</div>':'')+banner+
+    root.innerHTML=(S.q('bienvenue')?'<div class="msg ok">Bienvenue chez WYK ! Votre ID de connexion est <b>'+esc(row.employee_code)+'</b> : notez-le bien, il vous servira à vous connecter avec votre mot de passe. Complétez ensuite votre profil : photo, parcours, compétences.</div>':'')+banner+
     '<section class="nm card hdr-card" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:18px"><div class="avatar">'+(row.photo_url?'<img src="'+esc(row.photo_url)+'" alt="">':S.ic('user'))+'</div><div style="flex:1;min-width:220px"><span class="pill '+row.status+'">'+esc(S.STATUS[row.status])+'</span><h2 style="font-size:clamp(24px,4vw,30px);margin:6px 0 2px">'+esc(row.full_name)+'</h2>'+S.verifiedBadge(row)+'<div class="mut">'+esc(pos.title||'')+' · '+esc(row.employee_code)+'</div><div class="small mut">Actif depuis '+esc(S.date(row.activated_at,'full'))+(age!=null?' · '+age+' ans':'')+'</div><div style="margin-top:12px;max-width:320px"><div class="small mut" style="display:flex;justify-content:space-between;margin-bottom:5px"><span>Profil complété</span><b>'+pc+'%</b></div><div class="prog"><i style="width:'+pc+'%"></i></div></div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="'+esc(pub)+'" target="_blank" rel="noopener">'+S.ic('eye')+'Voir ma page</a><button class="btn" id="cp">'+S.ic('link')+'Copier le lien</button></div></section>'+
     '<div class="tabs" role="tablist"><button class="tab on" data-p="edit">'+S.ic('edit')+'Modifier</button><button class="tab" data-p="prev">'+S.ic('doc')+'Mon CV</button><button class="tab" data-p="badge">'+S.ic('badge')+'Mon badge</button></div>'+
     '<div class="pane on" id="p-edit"></div><div class="pane" id="p-prev" style="display:none"></div><div class="pane" id="p-badge" style="display:none"></div>';
@@ -38,14 +38,14 @@
     if(locked(row))ed.innerHTML='<div class="nm card empty">Modification indisponible.</div>';
     else S.editor(ed,row,{fields:F,onSaved:function(r){row=r;paint2()}});
     function paint2(){document.getElementById('p-prev').dataset.done='';document.getElementById('p-badge').dataset.done='';var on=document.querySelector('.tabs .on').dataset.p;if(on==='prev')prev();if(on==='badge')badge()}
-    function prev(){var pr=document.getElementById('p-prev');pr.innerHTML='<p class="small mut no-print" style="margin-bottom:14px">Voici exactement ce que verra le public (selon les règles de votre catégorie).'+(row.status!=='active'?' <b>Votre profil n\'est pas actif : il n\'est pas encore visible.</b>':'')+'</p>'+S.renderProfile(S.view(row,pos.title||'',F,pos.description),{code:code});S.bindProfile(pr,code,row.full_name)}
-    function badge(){var b=document.getElementById('p-badge'),v=S.view(row,pos.title||'',F,pos.description);
+    function prev(){var pr=document.getElementById('p-prev');pr.innerHTML='<p class="small mut no-print" style="margin-bottom:14px">Voici exactement ce que verra le public (selon les règles de votre catégorie).'+(row.status!=='active'?' <b>Votre profil n\'est pas actif : il n\'est pas encore visible.</b>':'')+'</p>'+S.renderProfile(S.view(row,pos.title||'',F,pos.description,pos.icon),{code:code});S.bindProfile(pr,code,row.full_name)}
+    function badge(){var b=document.getElementById('p-badge'),v=S.view(row,pos.title||'',F,pos.description,pos.icon);
       b.innerHTML='<div class="bdg-pane"><div class="bdg-host">'+S.badgeCard(v,{code:code})+'</div>'+
-      '<div class="bdg-actions no-print"><button class="btn pri" id="pb">'+S.ic('print')+'Imprimer / enregistrer en PDF</button><button class="btn" id="bq">'+S.ic('qr')+'Afficher le QR code</button><button class="btn" id="bs">'+S.ic('share')+'Partager</button></div>'+
+      '<div class="bdg-actions no-print">'+S.badgeDlHtml()+'<button class="btn" id="bq">'+S.ic('qr')+'Afficher le QR code</button><button class="btn" id="bs">'+S.ic('share')+'Partager</button></div>'+
       '<section class="nm card no-print"><h3>'+S.ic('link')+'Lien unique de mon badge</h3><p class="small mut" style="margin-bottom:12px">Ce lien (et le QR code du badge) mène directement à votre badge public. Il est propre à vous et ne se devine pas.</p><div class="linkbox"><input id="bl" readonly value="'+esc(bu)+'" aria-label="Lien du badge"><button class="btn" id="bc">'+S.ic('link')+'Copier</button><a class="btn" href="'+esc(bu)+'" target="_blank" rel="noopener">'+S.ic('ext')+'Ouvrir</a></div></section>'+
       '<p class="bdg-note no-print">Les éléments affichés (photo, ID, QR…) dépendent des règles définies par WYK pour votre catégorie.</p></div>';
       S.bindBadge(b,{code:code,name:row.full_name});
-      document.getElementById('pb').onclick=S.printBadge;document.getElementById('bc').onclick=function(){S.copy(bu,'Lien du badge copié')};
+      S.bindBadgeDl(b,v,{code:code});document.getElementById('bc').onclick=function(){S.copy(bu,'Lien du badge copié')};
       document.getElementById('bs').onclick=function(){S.share(bu,'Badge de '+row.full_name)};
       document.getElementById('bq').onclick=function(){S.qrModal({url:bu,title:row.full_name,sub:'Scannez ce code pour ouvrir le badge en ligne.',extra:'<a class="btn sm" href="'+esc(pub)+'">'+S.ic('user')+'Voir le profil</a>'})};
       document.getElementById('bl').onclick=function(){this.select()}}
