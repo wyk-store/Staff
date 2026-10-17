@@ -272,19 +272,18 @@ S.badgeCard=function(p,o){o=o||{};var np=nameParts(p.full_name),first=np.first||
  var id=code?'<div class="bdg-id"><small>ID</small><b>'+esc(code)+'</b></div>':'';
  var qr=o.code&&!o.noQr?'<div class="bdg-qr" data-qr="'+esc(S.badgeUrl(o.code))+'" role="button" tabindex="0" aria-label="Agrandir le QR code"></div>':'';
  setTimeout(function(){S.fitBadge();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){S.fitBadge()})},0);
- return'<div class="bdg-wrap"><div class="bdg" data-bdg><div class="bdg-flipper"><div class="bdg-in">'+BADGE_ART+
+ return'<div class="bdg-wrap"><div class="bdg" data-bdg><div class="bdg-in">'+BADGE_ART+
  '<img class="bdg-corner" src="'+CORNER+'" alt="">'+
   '<img class="bdg-logo" src="'+LOGO_WB+'" alt="WYK">'+
   '<div class="bdg-tag">Faites vos<br>achats<br>autrement</div>'+
   '<div class="bdg-main"><div class="bdg-name"><span>'+esc(first)+'</span>'+(last?'<em>'+esc(last)+'</em>':'')+'</div><div class="bdg-pos">'+esc(p.position||'Équipe WYK')+'</div><div class="bdg-lr"><div class="bdg-line"></div>'+id+'</div>'+desc+'</div>'+
   '<div class="bdg-photo">'+photo+'</div>'+qr+
   '<div class="bdg-foot"><b>wykht.com</b><span>Connecter les gens,<br>soutenir l\'économie locale.</span></div>'+
-  '</div><div class="bdg-back" aria-label="Dos blanc du badge WYK"><div class="bdg-back-content"><img class="bdg-back-logo" src="'+LOGO+'" alt=""><div class="bdg-back-brand">WYK STAFF</div><div class="bdg-back-rule"></div><div class="bdg-back-copy">Connecter les gens,<br>soutenir l\'économie locale.</div><div class="bdg-back-url">wykht.com</div><div class="bdg-back-small">IDENTITÉ · CONFIANCE · COMMUNAUTÉ</div></div></div></div><div class="bdg-glare"></div></div><button type="button" class="bdg-flip-btn no-print" data-bdg-flip aria-pressed="false"><span class="flip-arrow">↻</span><span>Voir le dos du badge</span></button></div>'};
+  '</div><div class="bdg-glare"></div></div></div>'};
 /* taille du nom : ajustée pour que la ligne la plus longue remplisse la largeur de la maquette (592 sur 1536) */
 S.fitBadge=function(root){(root||document).querySelectorAll('[data-bdg]').forEach(function(b){var nm=b.querySelector('.bdg-name'),inn=b.querySelector('.bdg-in');if(!nm||!inn)return;var u=inn.offsetWidth/1536;if(!u)return;nm.style.setProperty('--nz','100');var w=0;nm.querySelectorAll('span,em').forEach(function(e){w=Math.max(w,e.offsetWidth)});if(!w)return;nm.style.setProperty('--nz',Math.max(40,Math.min(112,100*592*u/w)).toFixed(2))})};
 S.bindBadge=function(root,o){o=o||{};var b=root.querySelector('[data-bdg]');if(!b)return;
-  var flip=root.querySelector('[data-bdg-flip]');if(flip){flip.onclick=function(){var back=!b.classList.contains('is-flipped');b.classList.toggle('is-flipped',back);flip.setAttribute('aria-pressed',String(back));var label=flip.querySelector('span:not(.flip-arrow)');if(label)label.textContent=back?'Voir le recto du badge':'Voir le dos du badge';flip.querySelector('.flip-arrow').textContent=back?'↺':'↻';b.style.setProperty('--rx','0deg');b.style.setProperty('--ry','0deg')}}
- b.addEventListener('pointermove',function(e){if(b.classList.contains('is-flipped'))return;var r=b.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;b.style.setProperty('--ry',((x-.5)*9).toFixed(2)+'deg');b.style.setProperty('--rx',((.5-y)*7).toFixed(2)+'deg');b.style.setProperty('--gx',(x*100).toFixed(0)+'%');b.style.setProperty('--gy',(y*100).toFixed(0)+'%')});
+ b.addEventListener('pointermove',function(e){var r=b.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;b.style.setProperty('--ry',((x-.5)*9).toFixed(2)+'deg');b.style.setProperty('--rx',((.5-y)*7).toFixed(2)+'deg');b.style.setProperty('--gx',(x*100).toFixed(0)+'%');b.style.setProperty('--gy',(y*100).toFixed(0)+'%')});
  b.addEventListener('pointerleave',function(){b.style.setProperty('--rx','0deg');b.style.setProperty('--ry','0deg')});
  var q=b.querySelector('.bdg-qr');if(q){var open=function(){S.qrModal({url:S.badgeUrl(o.code),title:o.name||'Badge WYK',sub:'Scannez ce code pour ouvrir le badge en ligne.',extra:'<a class="btn sm" href="/profil?id='+encodeURIComponent(o.code)+'">'+ic('user')+'Voir le profil</a>'})};q.onclick=open;q.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}}}
  S.hydrateQR(b);S.fitBadge(b)};

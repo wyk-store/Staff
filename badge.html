@@ -1,34 +1,44 @@
 <!doctype html>
-<html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://byrklytqoucdskzvcoau.supabase.co wss://byrklytqoucdskzvcoau.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"><meta name="referrer" content="strict-origin-when-cross-origin"><meta name="color-scheme" content="light dark">
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://byrklytqoucdskzvcoau.supabase.co wss://byrklytqoucdskzvcoau.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin"><meta name="color-scheme" content="light dark">
 <title>Badge — WYK STAFF</title><meta name="robots" content="noindex, nofollow, noarchive">
 <link rel="icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&family=Caveat:wght@600&display=swap">
-<link rel="stylesheet" href="/staff.css">
-</head><body>
+<link rel="stylesheet" href="/staff.css"><link rel="stylesheet" href="/badge3d.css">
+</head>
+<body class="wyk-badge-page">
 <header id="top"></header>
 <main><div class="wrap" id="bx"><div class="nm card empty">Chargement du badge…</div></div></main>
 <footer id="foot"></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="/staff.js"></script>
+<script src="/staff.js"></script><script src="/badge3d.js"></script>
 <script>
 (async function(){
   S.shell('');
   var id=S.q('id'),box=document.getElementById('bx');
-  var msg=function(t,d){box.innerHTML='<div class="nm card unavail" style="max-width:560px;margin:auto"><h2>'+t+'</h2><p class="mut">'+d+'</p><p style="margin-top:20px"><a class="btn" href="/">Retour à l\'accueil</a></p></div>'};
+  var msg=function(t,d){box.innerHTML='<div class="nm card unavail" style="max-width:560px;margin:auto"><h2>'+S.esc(t)+'</h2><p class="mut">'+S.esc(d)+'</p><p style="margin-top:20px"><a class="btn" href="/">Retour à l\'accueil</a></p></div>'};
   if(!id){msg('Badge introuvable','Aucun identifiant n\'a été fourni.');return}
-  var r=await S.db.rpc('staff_public_profile',{p_code:id});
-  if(r.error){msg('Erreur de chargement','Réessayez dans un instant.');return}
-  var p=r.data;
-  if(!p){msg('Badge introuvable','Ce badge n\'existe pas ou le lien est incorrect.');return}
-  if(p.unavailable){msg('Badge indisponible','Ce badge n\'est pas actif pour le moment.');return}
-  document.title='Badge de '+p.full_name+' — WYK STAFF';
-  var f=p.fields||[];
-  box.innerHTML='<div class="bdg-pane"><div class="bdg-host">'+S.badgeCard(p,{code:id})+'</div><div class="bdg-actions no-print">'+S.badgeDlHtml()+'<a class="btn" href="/profil?id='+encodeURIComponent(id)+'">'+S.ic('user')+'Voir le profil complet</a><button class="btn" id="bs">'+S.ic('share')+'Partager</button></div><p class="bdg-note no-print">Statut : <b>'+S.esc(S.SVC[p.status][0])+'</b> · Ce badge est une vitrine numérique : seules les informations autorisées par WYK y figurent.</p></div>';
-  S.bindBadge(box,{code:id,name:p.full_name});
-  document.getElementById('bs').onclick=function(){S.share(S.badgeUrl(id),'Badge de '+p.full_name)};
-  S.bindBadgeDl(box,p,{code:id});
+  try {
+    var r=await S.db.rpc('staff_public_profile',{p_code:id});
+    if(r.error){msg('Erreur de chargement','Réessayez dans un instant.');return}
+    var p=r.data;
+    if(!p){msg('Badge introuvable','Ce badge n\'existe pas ou le lien est incorrect.');return}
+    if(p.unavailable){msg('Badge indisponible','Ce badge n\'est pas actif pour le moment.');return}
+    document.title='Badge de '+p.full_name+' — WYK STAFF';
+    box.innerHTML='<div class="bdg-pane wyk3d-page"><div class="bdg-host">'+S.badgeCard(p,{code:id})+'</div>'+
+      '<div class="bdg-actions no-print wyk3d-fallback-actions">'+S.badgeDlHtml()+'<a class="btn" href="/profil?id='+encodeURIComponent(id)+'">'+S.ic('user')+'Voir le profil complet</a><button class="btn" id="bs">'+S.ic('share')+'Partager</button></div>'+
+      '<p class="bdg-note no-print">Statut : <b>'+S.esc((S.SVC[p.status]||['Inconnu'])[0])+'</b> · Ce badge est une vitrine numérique : seules les informations autorisées par WYK y figurent.</p></div>';
+    S.bindBadge(box,{code:id,name:p.full_name});
+    document.getElementById('bs').onclick=function(){S.share(S.badgeUrl(id),'Badge de '+p.full_name)};
+    S.bindBadgeDl(box,p,{code:id});
+    var pane=box.querySelector('.wyk3d-page');
+    if(S.badge3D) S.badge3D(pane,p,{code:id,debug:new URLSearchParams(location.search).get('debug')==='1'});
+  } catch(e) { msg('Erreur de chargement','Réessayez dans un instant.'); }
 })();
 </script>
 </body></html>

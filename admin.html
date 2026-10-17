@@ -5,14 +5,14 @@
 <link rel="icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&family=Caveat:wght@600&display=swap">
-<link rel="stylesheet" href="/staff.css">
+<link rel="stylesheet" href="/staff.css"><link rel="stylesheet" href="/badge3d.css">
 </head><body>
 <header id="top"></header>
 <main><div class="wrap" id="root"><div class="nm card empty">Chargement…</div></div></main>
 <div class="modal" id="modal"><div class="nm box"><button class="ib cl" id="mx" aria-label="Fermer"></button><div id="mb"></div></div></div>
 <footer id="foot"></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="/staff.js"></script>
+<script src="/staff.js"></script><script src="/badge3d.js"></script>
 <script>
 (async function(){
 var esc=S.esc,db=S.db,root=document.getElementById('root'),tab='dash';
@@ -66,7 +66,7 @@ function posIco(id){var p=D.pos.find(function(x){return x.id===id});return p?p.i
 function viewP(p,mode){var F=mode==='full'?ALL:fieldsOf(p),code=S.idOf(p);
  modal('<div style="display:flex;gap:10px;margin:0 46px 18px 0;flex-wrap:wrap"><button class="btn sm'+(mode==='public'?' pri':'')+'" id="v1">Vue publique</button><button class="btn sm'+(mode==='full'?' pri':'')+'" id="v2">Vue complète (admin)</button><button class="btn sm'+(mode==='badge'?' pri':'')+'" id="v3">'+S.ic('badge')+'Badge</button></div><div id="vp"></div>');
  var el=document.getElementById('vp'),v=S.view(p,posOf(p.position_id),mode==='badge'?fieldsOf(p):F,posDesc(p.position_id),posIco(p.position_id));
- if(mode==='badge'){el.innerHTML='<div class="bdg-host">'+S.badgeCard(v,{code:code})+'</div><p class="bdg-note">Badge tel que le public le voit (règles de la catégorie). Lien : '+esc(S.badgeUrl(code))+'</p>';S.bindBadge(el,{code:code,name:p.full_name})}
+ if(mode==='badge'){el.innerHTML='<div class="bdg-host">'+S.badgeCard(v,{code:code})+'</div><p class="bdg-note">Badge tel que le public le voit (règles de la catégorie). Lien : '+esc(S.badgeUrl(code))+'</p>';S.bindBadge(el,{code:code,name:p.full_name});if(S.badge3D)S.badge3D(el,v,{code:code})}
  else{el.innerHTML=S.renderProfile(v,{code:code,noActs:true});S.bindProfile(el,code,p.full_name)}
  document.getElementById('v1').onclick=function(){viewP(p,'public')};document.getElementById('v2').onclick=function(){viewP(p,'full')};document.getElementById('v3').onclick=function(){viewP(p,'badge')}}
 function editP(p){modal('<h3 style="margin:0 46px 16px 0">Modifier — '+esc(p.full_name)+'</h3><div id="ed"></div>');

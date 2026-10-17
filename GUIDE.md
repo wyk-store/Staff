@@ -74,3 +74,13 @@ Namecheap → Domain List → **wykht.com → Manage → Advanced DNS** → *Add
 - Badge : même mise en page que le modèle (police du site conservée), ID affiché en permanence, QR code plus grand en bas à droite, icône propre à chaque poste. Boutons **Enregistrer l'image** (PNG, forme exacte) et **Télécharger en PDF**. Aucune mention « vérifié » sur le badge téléchargé.
 - CV : mis en page sur une seule page A4, sans mention « vérifié ». Le bouton ouvre la fenêtre d'impression : choisir « Enregistrer au format PDF ».
 - Mot de passe perdu : l'administrateur le réinitialise dans Supabase > Authentication > Users (le compte employé est `staff-xxxx@staff.wykht.com`, retrouvable via son profil).
+
+
+## Visite 3D du badge (ajout v3.6)
+Les fichiers `badge3d.js` et `badge3d.css` ajoutent une scène Three.js progressive aux pages `badge.html`, `moi.html` et à l'aperçu badge de `admin.html`. La page garde le badge 2D comme solution de repli. La face avant est issue de `S.badgeCanvas` afin de conserver la composition exportée; le dos est généré localement avec un QR public, un effet PVC clair, une zone de puce et un hologramme graphique.
+
+- Three.js est chargé à la demande depuis `https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js`.
+- Aucun `worker-src blob:` n'est nécessaire; aucune texture ou image supplémentaire distante n'est chargée.
+- `S.badge3D(root, profile, {code})` renvoie une instance contenant `dispose`, `flip`, `reset`, `tour` et `host`.
+- Le mode 3D est désactivé si `prefers-reduced-motion: reduce` est actif ou si WebGL n'est pas disponible.
+- Les exports PNG/PDF et les fonctions existantes du badge restent assurés par `staff.js`.

@@ -5,13 +5,13 @@
 <link rel="icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&family=Caveat:wght@600&display=swap">
-<link rel="stylesheet" href="/staff.css">
+<link rel="stylesheet" href="/staff.css"><link rel="stylesheet" href="/badge3d.css">
 </head><body>
 <header id="top"></header>
 <main><div class="wrap" id="root"><div class="nm card empty">Chargement…</div></div></main>
 <footer id="foot"></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="/staff.js"></script>
+<script src="/staff.js"></script><script src="/badge3d.js"></script>
 <script>
 (async function(){
   var root=document.getElementById('root'),esc=S.esc;
@@ -44,7 +44,7 @@
       '<div class="bdg-actions no-print">'+S.badgeDlHtml()+'<button class="btn" id="bq">'+S.ic('qr')+'Afficher le QR code</button><button class="btn" id="bs">'+S.ic('share')+'Partager</button></div>'+
       '<section class="nm card no-print"><h3>'+S.ic('link')+'Lien unique de mon badge</h3><p class="small mut" style="margin-bottom:12px">Ce lien (et le QR code du badge) mène directement à votre badge public. Il est propre à vous et ne se devine pas.</p><div class="linkbox"><input id="bl" readonly value="'+esc(bu)+'" aria-label="Lien du badge"><button class="btn" id="bc">'+S.ic('link')+'Copier</button><a class="btn" href="'+esc(bu)+'" target="_blank" rel="noopener">'+S.ic('ext')+'Ouvrir</a></div></section>'+
       '<p class="bdg-note no-print">Les éléments affichés (photo, ID, QR…) dépendent des règles définies par WYK pour votre catégorie.</p></div>';
-      S.bindBadge(b,{code:code,name:row.full_name});
+      S.bindBadge(b,{code:code,name:row.full_name});if(S.badge3D)S.badge3D(b,v,{code:code});
       S.bindBadgeDl(b,v,{code:code});document.getElementById('bc').onclick=function(){S.copy(bu,'Lien du badge copié')};
       document.getElementById('bs').onclick=function(){S.share(bu,'Badge de '+row.full_name)};
       document.getElementById('bq').onclick=function(){S.qrModal({url:bu,title:row.full_name,sub:'Scannez ce code pour ouvrir le badge en ligne.',extra:'<a class="btn sm" href="'+esc(pub)+'">'+S.ic('user')+'Voir le profil</a>'})};

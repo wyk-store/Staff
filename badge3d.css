@@ -1,0 +1,29 @@
+/* WYK STAFF — couche de présentation pour la visite 3D */
+.wyk-badge-page{--w3-red:#f30707;--w3-ink:#0a090b;min-height:100dvh;background:radial-gradient(ellipse at 50% 8%,rgba(111,15,27,.38),transparent 52%),linear-gradient(145deg,#09090b 0%,#171014 55%,#080809 100%);color:#f7f5f6}
+.wyk-badge-page main{padding:clamp(12px,3vw,34px) 0 calc(28px + env(safe-area-inset-bottom))}
+.wyk-badge-page .bdg-pane{max-width:1120px;margin:0 auto}
+.wyk-badge-page .bdg-note{color:#c8c1c5;text-align:center;line-height:1.65}
+.wyk-badge-page .wyk3d-stage{position:relative;isolation:isolate;width:100%;height:clamp(340px,66vh,760px);height:clamp(340px,66dvh,760px);min-height:340px;overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:clamp(18px,3vw,34px);background:radial-gradient(ellipse at 50% 45%,rgba(115,21,33,.42),transparent 54%),linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.012));box-shadow:0 28px 80px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.09);touch-action:none;user-select:none;-webkit-user-select:none}
+.wyk3d-stage::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 48%,transparent 24%,rgba(0,0,0,.25) 100%);z-index:-1}
+.wyk3d-stage canvas{display:block;width:100%;height:100%;outline:none}
+.wyk3d-stage.is-dragging{cursor:grabbing}
+.wyk3d-caption{position:absolute;left:14px;right:14px;top:12px;text-align:center;color:rgba(255,255,255,.75);font:600 11px/1.4 Montserrat, sans-serif;letter-spacing:.11em;text-transform:uppercase;pointer-events:none;text-shadow:0 1px 8px #000}
+.wyk3d-actions{position:absolute;left:10px;right:10px;bottom:10px;display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;padding:9px;border:1px solid rgba(255,255,255,.15);border-radius:18px;background:rgba(20,17,20,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.wyk3d-action{min-height:48px;min-width:100px;padding:0 15px;border-radius:13px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font:700 12px Montserrat, sans-serif;cursor:pointer;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+.wyk3d-action:hover{border-color:rgba(243,7,7,.8);background:rgba(243,7,7,.2);transform:translateY(-1px)}
+.wyk3d-action:focus-visible{outline:3px solid #ff6262;outline-offset:3px}
+.wyk3d-fallback{transition:opacity .3s ease}
+.wyk3d-fallback-hidden{opacity:0!important;pointer-events:none!important;position:absolute!important;inset:0!important;overflow:hidden!important}
+.wyk3d-ready~.wyk3d-fallback-actions{display:flex}
+.wyk3d-page .wyk3d-fallback-actions{margin-top:14px}
+.wyk-badge-page .bdg-actions .btn{min-height:48px}
+@media(max-width:600px){
+ .wyk-badge-page main{padding-top:12px}
+ .wyk3d-stage{height:clamp(400px,70dvh,720px)!important;min-height:400px!important;border-radius:20px}
+ .wyk3d-actions{left:8px;right:8px;bottom:8px;gap:6px;padding:7px}
+ .wyk3d-action{flex:1 1 calc(50% - 8px);min-width:0;min-height:48px;padding:0 8px;font-size:11px}
+ .wyk3d-caption{font-size:10px}
+}
+@media(orientation:portrait) and (max-width:600px){.wyk3d-stage canvas{transform:translateZ(0)}}
+@media(prefers-color-scheme:light){.wyk-badge-page{background:radial-gradient(ellipse at 50% 10%,#fff 0%,#f0f1f5 60%,#e6e8ee 100%);color:#15161b}.wyk3d-stage{background:radial-gradient(ellipse at 50% 45%,rgba(255,255,255,.96),transparent 65%),linear-gradient(135deg,rgba(255,255,255,.85),rgba(230,232,239,.8));border-color:rgba(30,34,44,.12);box-shadow:0 24px 70px rgba(25,28,38,.12),inset 0 1px #fff}.wyk3d-caption{color:#4a4e58;text-shadow:none}.wyk3d-actions{background:rgba(255,255,255,.78);border-color:rgba(20,24,35,.12)}.wyk3d-action{color:#181a20;background:rgba(255,255,255,.8);border-color:rgba(20,24,35,.14)}.wyk-badge-page .bdg-note{color:#555b66}}
+@media(prefers-reduced-motion:reduce){.wyk3d-stage,.wyk3d-action,.wyk3d-fallback{transition:none!important}.wyk3d-stage{display:none}.wyk3d-fallback-hidden{opacity:1!important;position:static!important}}
