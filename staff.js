@@ -294,10 +294,10 @@ S.bindBadge=function(root,o){o=o||{};var b=root.querySelector('[data-bdg]');if(!
 /* ---------- export du badge : image PNG et PDF (dessiné à 1920×1081, mêmes mesures que l'affichage, sans aucune mention « vérifié ») ---------- */
 S.loadImg=function(u){var one=function(src){return new Promise(function(ok){var i=new Image();i.crossOrigin='anonymous';i.onload=function(){ok(i)};i.onerror=function(){ok(null)};i.src=src})};
  if(!u)return Promise.resolve(null);var bust=u+(u.indexOf('?')>-1?'&':'?')+'wykcors=1';return one(bust).then(function(i){return i||one(u)})};
-S.badgeCanvas=async function(p,o){o=o||{};var W=1920,H=1081,K=W/1536,cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d');
+S.badgeCanvas=async function(p,o){o=o||{};var SC=Math.max(.5,Math.min(3,o.scale||1)),W=Math.round(1920*SC),H=Math.round(W*865/1536),K=W/1536,cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d');
  try{await Promise.all([800,700,600,500,400].map(function(w){return document.fonts.load(w+' 40px Montserrat')}))}catch(e){}
  var pu=p.photo_url?S.safeUrl(p.photo_url):'';
- var art=await new Promise(function(ok){var i=new Image();i.onload=function(){ok(i)};i.onerror=function(){ok(null)};i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(BADGE_ART)});
+ var art=await new Promise(function(ok){var i=new Image();i.onload=function(){ok(i)};i.onerror=function(){ok(null)};i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(BADGE_ART.replace('width="1536" height="865"','width="'+W+'" height="'+H+'"'))});
  var im=await Promise.all([S.loadImg(pu),o.code?S.loadQR():0,S.loadImg(LOGO_WB),S.loadImg(CORNER)]),ph=im[0],logo=im[2],corner=im[3];
  var FM='Montserrat,Inter,system-ui,sans-serif',RED='#f30707';
  var np=nameParts(p.full_name),first=np.first||p.full_name||'',last=np.last;

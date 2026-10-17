@@ -1,0 +1,50 @@
+-- ============================================================
+-- WYK STAFF — migration v4 (à exécuter UNE fois dans Supabase > SQL Editor, après staff-v3)
+-- Idempotente : tu peux la relancer sans risque.
+-- Ajoute : la réinitialisation du mot de passe d'un employé par l'administrateur.
+--   * staff_admin_set_password(p_user, p_password) : réservé aux administrateurs (staff_is_admin)
+--       - change le mot de passe du compte, déconnecte l'employé de tous ses appareils
+--       - marque le profil « doit changer son mot de passe » à la prochaine connexion
+--   * staff_clear_must_change() : appelée par l'employé après avoir choisi son nouveau mot de passe
+-- ============================================================
+
+create extension if not exists pgcrypto with schema extensions;
+
+alter table staff_profiles add column if not exists must_change_password boolean not null default false;
+
+create or replace function staff_admin_set_password(p_user uuid, p_password text) returns jsonb
+language plpgsql security definer set search_path=public,auth,extensions as $$
+begin
+  if not staff_is_admin() then raise exception 'Accès réservé à l''administration.'; end if;
+  if p_user is null or not exists(select 1 from staff_profiles where user_id=p_user) then
+    raise exception 'Profil introuvable.';
+  end if;
+  if exists(select 1 from staff_admins where user_id=p_user) and p_user<>auth.uid() then
+    raise exception 'Le mot de passe d''un autre administrateur ne peut pas être modifié ici.';
+  end if;
+  if length(coalesce(p_password,''))<8 or p_password !~ '[A-Za-z]' or p_password !~ '[0-9]' then
+    raise exception 'Mot de passe trop faible : 8 caractères minimum, avec au moins une lettre et un chiffre.';
+  end if;
+
+  update auth.users
+     set encrypted_password = extensions.crypt(p_password, extensions.gen_salt('bf')),
+         updated_at = now()
+   where id = p_user;
+  if not found then raise exception 'Compte de connexion introuvable.'; end if;
+
+  -- déconnecte l'employé partout (sessions et jetons de rafraîchissement)
+  begin delete from auth.sessions where user_id = p_user; exception when others then null; end;
+  begin delete from auth.refresh_tokens where user_id::text = p_user::text; exception when others then null; end;
+
+  update staff_profiles set must_change_password = true where user_id = p_user;
+  return jsonb_build_object('ok', true);
+end $$;
+revoke all on function staff_admin_set_password(uuid,text) from public, anon;
+grant execute on function staff_admin_set_password(uuid,text) to authenticated;
+
+create or replace function staff_clear_must_change() returns void
+language sql security definer set search_path=public as $$
+  update staff_profiles set must_change_password = false where user_id = auth.uid()
+$$;
+revoke all on function staff_clear_must_change() from public, anon;
+grant execute on function staff_clear_must_change() to authenticated;

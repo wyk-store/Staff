@@ -31,8 +31,8 @@
     var banner=locked(row)?'<div class="msg">Votre profil est <b>'+esc(S.STATUS[row.status].toLowerCase())+'</b> : il n\'est plus visible et ne peut pas être modifié. Contactez WYK pour plus d\'informations.</div>':(row.status==='inactive'?'<div class="msg">Votre profil est inactif : il n\'est pas visible publiquement.</div>':'');
     root.innerHTML=(S.q('bienvenue')?'<div class="msg ok">Bienvenue chez WYK ! Votre ID de connexion est <b>'+esc(row.employee_code)+'</b> : notez-le bien, il vous servira à vous connecter avec votre mot de passe. Complétez ensuite votre profil : photo, parcours, compétences.</div>':'')+banner+
     '<section class="nm card hdr-card" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:18px"><div class="avatar">'+(row.photo_url?'<img src="'+esc(row.photo_url)+'" alt="">':S.ic('user'))+'</div><div style="flex:1;min-width:220px"><span class="pill '+row.status+'">'+esc(S.STATUS[row.status])+'</span><h2 style="font-size:clamp(24px,4vw,30px);margin:6px 0 2px">'+esc(row.full_name)+'</h2>'+S.verifiedBadge(row)+'<div class="mut">'+esc(pos.title||'')+' · '+esc(row.employee_code)+'</div><div class="small mut">Actif depuis '+esc(S.date(row.activated_at,'full'))+(age!=null?' · '+age+' ans':'')+'</div><div style="margin-top:12px;max-width:320px"><div class="small mut" style="display:flex;justify-content:space-between;margin-bottom:5px"><span>Profil complété</span><b>'+pc+'%</b></div><div class="prog"><i style="width:'+pc+'%"></i></div></div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="'+esc(pub)+'" target="_blank" rel="noopener">'+S.ic('eye')+'Voir ma page</a><button class="btn" id="cp">'+S.ic('link')+'Copier le lien</button></div></section>'+
-    '<div class="tabs" role="tablist"><button class="tab on" data-p="edit">'+S.ic('edit')+'Modifier</button><button class="tab" data-p="prev">'+S.ic('doc')+'Mon CV</button><button class="tab" data-p="badge">'+S.ic('badge')+'Mon badge</button></div>'+
-    '<div class="pane on" id="p-edit"></div><div class="pane" id="p-prev" style="display:none"></div><div class="pane" id="p-badge" style="display:none"></div>';
+    '<div class="tabs" role="tablist"><button class="tab on" data-p="edit">'+S.ic('edit')+'Modifier</button><button class="tab" data-p="prev">'+S.ic('doc')+'Mon CV</button><button class="tab" data-p="badge">'+S.ic('badge')+'Mon badge</button><button class="tab" data-p="sec">'+S.ic('lock')+'Sécurité</button></div>'+
+    '<div class="pane on" id="p-edit"></div><div class="pane" id="p-prev" style="display:none"></div><div class="pane" id="p-badge" style="display:none"></div><div class="pane" id="p-sec" style="display:none"></div>';
     document.getElementById('cp').onclick=function(){S.copy(pub,'Lien copié')};
     var ed=document.getElementById('p-edit');
     if(locked(row))ed.innerHTML='<div class="nm card empty">Modification indisponible.</div>';
@@ -49,9 +49,24 @@
       document.getElementById('bs').onclick=function(){S.share(bu,'Badge de '+row.full_name)};
       document.getElementById('bq').onclick=function(){S.qrModal({url:bu,title:row.full_name,sub:'Scannez ce code pour ouvrir le badge en ligne.',extra:'<a class="btn sm" href="'+esc(pub)+'">'+S.ic('user')+'Voir le profil</a>'})};
       document.getElementById('bl').onclick=function(){this.select()}}
+    function sec(){var s=document.getElementById('p-sec');
+      s.innerHTML=(row.must_change_password?'<div class="msg" role="alert"><b>Votre mot de passe a été réinitialisé par l\'administration.</b> Choisissez maintenant un nouveau mot de passe personnel.</div>':'')+'<section class="nm card"><h3>'+S.ic('lock')+'Changer mon mot de passe</h3><div class="msg" id="sm" style="display:none" role="alert"></div><form id="sf" novalidate><div class="field" style="margin-bottom:6px"><label for="np1">Nouveau mot de passe</label><div class="pwf"><input type="password" id="np1" minlength="8" autocomplete="new-password" required><button type="button" class="eye" data-eye="np1" aria-label="Afficher le mot de passe"></button></div><div class="meter" id="smt"><i></i></div><span class="small mut">8 caractères minimum, avec une lettre et un chiffre.</span></div><div class="field"><label for="np2">Confirmer le mot de passe</label><div class="pwf"><input type="password" id="np2" autocomplete="new-password" required><button type="button" class="eye" data-eye="np2" aria-label="Afficher le mot de passe"></button></div></div><button class="btn pri" id="sb">'+S.ic('check')+'Enregistrer le mot de passe</button></form></section>';
+      s.querySelectorAll('[data-eye]').forEach(function(b){b.innerHTML=S.ic('eye')});S.bindEyes(s);
+      var $=function(i){return document.getElementById(i)},show=function(t,ok){var m=$('sm');m.style.display=t?'block':'none';m.className='msg'+(ok?' ok':'');m.textContent=t||''};
+      var st=function(v){var n=0;if(v.length>=8)n++;if(/[a-zA-Z]/.test(v)&&/\d/.test(v))n++;if(v.length>=12)n++;if(/[^a-zA-Z0-9]/.test(v))n++;return n};
+      $('np1').oninput=function(){var n=st($('np1').value),i=$('smt').firstChild;i.style.width=(n*25)+'%';i.style.background=n<2?'var(--bad)':n<3?'var(--warn)':'var(--ok)'};
+      $('sf').onsubmit=async function(e){e.preventDefault();show('');var a=$('np1').value,b=$('np2').value;
+        if(st(a)<2){show('Mot de passe trop faible : 8 caractères minimum, avec au moins une lettre et un chiffre.');return}
+        if(a!==b){show('Les deux mots de passe ne sont pas identiques.');return}
+        $('sb').disabled=true;var r=await S.db.auth.updateUser({password:a});
+        if(r.error){$('sb').disabled=false;show(S.errMsg(r.error));return}
+        try{await S.db.rpc('staff_clear_must_change')}catch(x){}
+        row.must_change_password=false;$('sf').reset();$('sb').disabled=false;$('smt').firstChild.style.width='0';show('Mot de passe modifié.',true);S.toast('Mot de passe modifié');
+        var bn=s.querySelector('.msg[role=alert]:not(#sm)');if(bn)bn.remove()}}
     document.querySelector('.tabs').onclick=function(e){var t=e.target.closest('[data-p]');if(!t)return;[].forEach.call(document.querySelectorAll('.tabs .tab'),function(x){x.classList.toggle('on',x===t)});
-      ['edit','prev','badge'].forEach(function(k){var el=document.getElementById('p-'+k);var on=k===t.dataset.p;el.style.display=on?'':'none';el.classList.toggle('on',on)});
-      if(t.dataset.p==='prev')prev();if(t.dataset.p==='badge')badge()};
+      ['edit','prev','badge','sec'].forEach(function(k){var el=document.getElementById('p-'+k);var on=k===t.dataset.p;el.style.display=on?'':'none';el.classList.toggle('on',on)});
+      if(t.dataset.p==='prev')prev();if(t.dataset.p==='badge')badge();if(t.dataset.p==='sec')sec()};
+    if(row.must_change_password){var tb=document.querySelector('.tabs [data-p=sec]');if(tb)tb.click()}
   }
   paint();
 })();

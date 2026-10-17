@@ -9,7 +9,7 @@
     THREE_URL: 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js',
     FRONT_W: 4096, FRONT_H: 2306, BACK_W: 2048, BACK_H: 1152,
     CARD_W: 5.12, CARD_H: 2.88, CARD_D: 0.052,
-    CORNER: 0.164, BEVEL: 0.018, MAX_DPR: 2.0,
+    CORNER: 0.164, BEVEL: 0.018, MAX_DPR: 3.0, MAX_PIXELS: 3300000,
     ROTATE_SENSITIVITY: 0.008, DAMPING: 0.91, MIN_ZOOM: 0.70, MAX_ZOOM: 2.20,
     SAFE_MARGIN: 0.94, RED_DAMPING: 0.90, SNAP_SPEED: 0.0008
   };
@@ -36,7 +36,7 @@
   }
   function canvasTexture(T, canvas, maxAniso) {
     var texCanvas = canvas;
-    if (canvas.width < CFG.FRONT_W && canvas.height < CFG.FRONT_H && canvas.width / canvas.height > 1.7) { var hi = d.createElement('canvas'); hi.width = CFG.FRONT_W; hi.height = CFG.FRONT_H; var hx = hi.getContext('2d'); hx.imageSmoothingEnabled = true; hx.imageSmoothingQuality = 'high'; hx.drawImage(canvas, 0, 0, hi.width, hi.height); texCanvas = hi; }
+    if (false) { var hi = d.createElement('canvas'); hi.width = CFG.FRONT_W; hi.height = CFG.FRONT_H; var hx = hi.getContext('2d'); hx.imageSmoothingEnabled = true; hx.imageSmoothingQuality = 'high'; hx.drawImage(canvas, 0, 0, hi.width, hi.height); texCanvas = hi; }
     var tex = new T.CanvasTexture(texCanvas);
     tex.colorSpace = T.SRGBColorSpace;
     tex.anisotropy = maxAniso || 1;
@@ -120,8 +120,8 @@
     }
     x.putImageData(im,0,0); var t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(5,3);return t;
   }
-  function buildFrontTexture(T, profile, code, maxAniso) {
-    return Promise.resolve().then(function(){return S.badgeCanvas(profile,{code:code})}).then(function(cv){
+  function buildFrontTexture(T, profile, code, maxAniso, texW) {
+    return Promise.resolve().then(function(){return S.badgeCanvas(profile,{code:code,scale:(texW||CFG.FRONT_W)/1920})}).then(function(cv){
       if (!cv || !cv.getContext) throw new Error('Rendu 2D du badge indisponible');
       // La texture vient du moteur d’export pour préserver la composition et le QR.
       return canvasTexture(T,cv,maxAniso);
@@ -178,7 +178,7 @@
     function haptic(ms){try{if(navigator.vibrate)navigator.vibrate(ms||12)}catch(_){}}
     function schedule(){if(!disposed&&!raf&&pageVisible&&inView)raf=requestAnimationFrame(render);}
     function fitCameraToCard(){if(!camera||!host)return;var r=host.getBoundingClientRect(),aspect=Math.max(.25,(r.width||640)/(r.height||420)),fov=camera.fov*Math.PI/180,halfW=CFG.CARD_W*.5,halfH=CFG.CARD_H*.5;var distance=Math.max(halfH/Math.tan(fov/2),halfW/(Math.tan(fov/2)*aspect));distance=(distance/CFG.SAFE_MARGIN)+.35;camera.position.z=Math.max(distance,4.0)/zoom;camera.aspect=aspect;camera.updateProjectionMatrix();}
-    function syncTheme(){if(!scene||!lights)return;var dark=d.documentElement.getAttribute('data-theme')==='dark';scene.fog=new THREE_REF.Fog(dark?0x09080a:0xf0f1f5,9,24);lights.hemi.intensity=dark?1.9:2.25;lights.key.intensity=dark?3.0:2.4;lights.fill.intensity=dark?1.6:1.25;lights.rim.intensity=dark?2.6:1.15;lights.point.intensity=dark?1.2:.65;var tc=d.getElementById('wykThemeColor');if(tc)tc.setAttribute('content',dark?'#08080a':'#f3f4f7');if(renderer)renderer.setClearColor(dark?0x09080a:0xf0f1f5,0);schedule();}
+    function syncTheme(){if(!scene||!lights)return;var dark=d.documentElement.getAttribute('data-theme')==='dark';scene.fog=null;lights.hemi.intensity=dark?1.9:2.25;lights.key.intensity=dark?3.0:2.4;lights.fill.intensity=dark?1.6:1.25;lights.rim.intensity=dark?2.6:1.15;lights.point.intensity=dark?1.2:.65;var tc=d.getElementById('wykThemeColor');if(tc)tc.setAttribute('content',dark?'#08080a':'#f3f4f7');if(renderer)renderer.setClearColor(dark?0x09080a:0xf0f1f5,0);schedule();}
     function disposeAll(){
       if(disposed)return;disposed=true;if(raf)cancelAnimationFrame(raf);if(tourTimer)clearTimeout(tourTimer);
       if(resizeObs)resizeObs.disconnect();if(intersectionObs)intersectionObs.disconnect();if(mutationObs)mutationObs.disconnect();
@@ -189,7 +189,7 @@
       host.remove();if(fallback)fallback.classList.remove('wyk3d-fallback');if(typeof opts.onDispose==='function')opts.onDispose();
     }
     function onVisibility(){pageVisible=!d.hidden;if(pageVisible)schedule();else if(raf){cancelAnimationFrame(raf);raf=0;}}
-    function onResize(){if(!renderer||disposed)return;var rect=host.getBoundingClientRect();if(!rect.width||!rect.height)return;var dpr=Math.min(w.devicePixelRatio||1,CFG.MAX_DPR);renderer.setPixelRatio(dpr);renderer.setSize(rect.width,rect.height,false);fitCameraToCard();schedule();}
+    function onResize(){if(!renderer||disposed)return;var rect=host.getBoundingClientRect();if(!rect.width||!rect.height)return;var dpr=Math.min(w.devicePixelRatio||1,CFG.MAX_DPR,Math.sqrt(CFG.MAX_PIXELS/Math.max(1,rect.width*rect.height)));renderer.setPixelRatio(dpr);renderer.setSize(rect.width,rect.height,false);fitCameraToCard();schedule();}
     function onDown(e){if(disposed)return;try{host.setPointerCapture&&host.setPointerCapture(e.pointerId)}catch(_){}pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});startX=e.clientX;startY=e.clientY;startAt=performance.now();lastX=e.clientX;lastY=e.clientY;isDragging=false;oldDist=0;oldAngle=0;lastPointerAt=performance.now();}
     function onMove(e){
       if(!pointers.has(e.pointerId))return;
@@ -228,15 +228,16 @@
       if(disposed)return;
       try{
         THREE_REF=T;renderer=new T.WebGLRenderer({canvas:canvas,alpha:true,antialias:true,powerPreference:'high-performance'});
-        renderer.setPixelRatio(Math.min(w.devicePixelRatio||1,CFG.MAX_DPR));renderer.setSize(host.clientWidth||640,host.clientHeight||420,false);
+        renderer.setPixelRatio(Math.min(w.devicePixelRatio||1,CFG.MAX_DPR,Math.sqrt(CFG.MAX_PIXELS/Math.max(1,(host.clientWidth||640)*(host.clientHeight||420)))));renderer.setSize(host.clientWidth||640,host.clientHeight||420,false);
         renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;
         scene=new T.Scene();scene.background=null;camera=new T.PerspectiveCamera(34,(host.clientWidth||640)/(host.clientHeight||420),.1,80);camera.position.set(0,.1,5.8);
         lights=setupLights(T,scene,renderer);
         var group=new T.Group();scene.add(group);card=group;card.rotation.set(-.1,.24,0);
         var geom=createCardGeometry(T),aniso=renderer.capabilities.getMaxAnisotropy();
-        var pair=await Promise.all([buildFrontTexture(T,profile,opts.code,aniso),Promise.resolve(buildBackTexture(T,profile,opts.code,aniso))]);
+        var smallDev=(w.matchMedia&&w.matchMedia('(pointer:coarse)').matches)||(navigator.deviceMemory&&navigator.deviceMemory<=4),texW=Math.min(renderer.capabilities.maxTextureSize||2048,smallDev?3072:4096);
+        var pair=await Promise.all([buildFrontTexture(T,profile,opts.code,aniso,texW),Promise.resolve(buildBackTexture(T,profile,opts.code,aniso))]);
         if(disposed){pair[0].dispose();pair[1].dispose();return;}
-        frontMat=new T.MeshPhysicalMaterial({map:pair[0],color:0xffffff,roughness:.28,metalness:.03,clearcoat:1,clearcoatRoughness:.18,ior:1.45,normalMap:buildNormalMap(T),normalScale:new T.Vector2(.035,.035)});
+        frontMat=new T.MeshBasicMaterial({map:pair[0],toneMapped:false});
         backMat=makeBackPlate(T,pair[1],buildNormalMap(T));
         // ExtrudeGeometry material groups: front/back use face textures, sides use pearl PVC.
         var edge=new T.MeshPhysicalMaterial({color:0xeeeef2,roughness:.3,metalness:.1,clearcoat:.65,clearcoatRoughness:.22});
@@ -244,6 +245,7 @@
         // Face arrière posée à l'envers sur le dos de l'extrusion, légèrement décalée pour éviter le z-fighting.
         var back=new T.Mesh(new T.PlaneGeometry(CFG.CARD_W-.12,CFG.CARD_H-.12),backMat);back.position.z=-CFG.CARD_D/2-CFG.BEVEL-.002;back.rotation.y=Math.PI;group.add(back);
         var front=new T.Mesh(new T.PlaneGeometry(CFG.CARD_W-.12,CFG.CARD_H-.12),frontMat);front.position.z=CFG.CARD_D/2+CFG.BEVEL+.002;group.add(front);
+        var gloss=new T.Mesh(new T.PlaneGeometry(CFG.CARD_W-.12,CFG.CARD_H-.12),new T.MeshPhysicalMaterial({color:0x000000,roughness:.22,metalness:0,clearcoat:1,clearcoatRoughness:.12,ior:1.45,normalMap:buildNormalMap(T),normalScale:new T.Vector2(.035,.035),transparent:true,opacity:.45,blending:T.AdditiveBlending,depthWrite:false,toneMapped:false}));gloss.position.z=CFG.CARD_D/2+CFG.BEVEL+.004;group.add(gloss);
         var floor=new T.Mesh(new T.CircleGeometry(3.8,64),new T.MeshBasicMaterial({color:0x151116,transparent:true,opacity:.15}));floor.rotation.x=-Math.PI/2;floor.position.y=-1.85;floor.position.z=-.2;scene.add(floor);
         var lanyard=buildLanyard(T,group);lanyard.strap.position.y=2.22;
         // Halo de studio léger, sans texture externe.

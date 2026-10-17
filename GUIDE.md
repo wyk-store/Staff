@@ -89,3 +89,11 @@ Les fichiers `badge3d.js` et `badge3d.css` ajoutent une scène Three.js progress
 ## Visite 3D (v3.7)
 
 La page du badge, l’aperçu du profil et la vue badge d’administration chargent `badge3d.js` et `badge3d.css`. Voir `AUDIT-3D-THEME.md` pour la CSP, l’audit ciblé du thème, les limites fonctionnelles connues et la checklist de test. La 3D est progressive et le badge 2D existant reste le repli.
+
+
+## Réinitialiser le mot de passe d'un employé (v4)
+1. Supabase > SQL Editor : exécute **une fois** `staff-v4.sql.txt`.
+2. Admin > **Profils** > bouton **Mot de passe** sur la ligne de l'employé : un mot de passe temporaire est généré (modifiable). Clique **Réinitialiser**, puis **Copier le message complet** et envoie-le à l'employé par un canal privé (WhatsApp, SMS…).
+3. L'employé est déconnecté de tous ses appareils. Il se connecte avec son ID + le mot de passe temporaire, puis la page **Mon espace > Sécurité** s'ouvre toute seule pour qu'il choisisse son propre mot de passe.
+4. Un employé peut aussi changer son mot de passe quand il veut depuis **Mon espace > Sécurité**.
+- Le mot de passe d'un autre administrateur ne peut pas être réinitialisé depuis cette page.
