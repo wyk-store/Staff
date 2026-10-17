@@ -84,3 +84,8 @@ Les fichiers `badge3d.js` et `badge3d.css` ajoutent une scène Three.js progress
 - `S.badge3D(root, profile, {code})` renvoie une instance contenant `dispose`, `flip`, `reset`, `tour` et `host`.
 - Le mode 3D est désactivé si `prefers-reduced-motion: reduce` est actif ou si WebGL n'est pas disponible.
 - Les exports PNG/PDF et les fonctions existantes du badge restent assurés par `staff.js`.
+
+
+## Visite 3D (v3.7)
+
+La page du badge, l’aperçu du profil et la vue badge d’administration chargent `badge3d.js` et `badge3d.css`. Voir `AUDIT-3D-THEME.md` pour la CSP, l’audit ciblé du thème, les limites fonctionnelles connues et la checklist de test. La 3D est progressive et le badge 2D existant reste le repli.

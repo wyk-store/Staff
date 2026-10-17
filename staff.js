@@ -56,9 +56,12 @@ wa:'<path d="M4 20l1.2-4.1A8 8 0 1 1 8.2 19z"/>',zoom:'<circle cx="11" cy="11" r
 var ic=S.ic=function(n,cls){return'<svg class="ic'+(cls?' '+cls:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+(P[n]||'')+'</svg>'};
 
 /* ---------- thème (clair par défaut) ---------- */
-function getTheme(){try{return localStorage.getItem(THEME)||'light'}catch(e){return'light'}}
-function setTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem(THEME,t)}catch(e){}var b=document.getElementById('themeBtn');if(b)b.innerHTML=ic(t==='dark'?'sun':'moon')}
-document.documentElement.setAttribute('data-theme',getTheme());
+function getTheme(){try{var t=localStorage.getItem(THEME);if(t==='dark'||t==='light')return t;return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){return'light'}}
+function setTheme(t){t=t==='dark'?'dark':'light';var root=document.documentElement;root.setAttribute('data-theme',t);root.style.colorScheme=t;try{localStorage.setItem(THEME,t)}catch(e){}var b=document.getElementById('themeBtn');if(b){b.innerHTML=ic(t==='dark'?'sun':'moon');b.setAttribute('aria-label',t==='dark'?'Activer le thème clair':'Activer le thème sombre');b.setAttribute('aria-pressed',String(t==='dark'))}var m=document.getElementById('wykThemeColor');if(m)m.setAttribute('content',t==='dark'?'#08080a':'#f3f4f7')}
+document.documentElement.setAttribute('data-theme',getTheme());document.documentElement.style.colorScheme=getTheme();
+window.addEventListener('storage',function(e){if(e.key===THEME)setTheme(e.newValue==='dark'?'dark':'light')});
+try{var systemTheme=window.matchMedia('(prefers-color-scheme: dark)');var syncSystemTheme=function(e){var saved=null;try{saved=localStorage.getItem(THEME)}catch(_){}if(saved!=='dark'&&saved!=='light')setTheme(e.matches?'dark':'light')};if(systemTheme.addEventListener)systemTheme.addEventListener('change',syncSystemTheme);else if(systemTheme.addListener)systemTheme.addListener(syncSystemTheme)}catch(e){}
+
 
 /* ---------- authentification ---------- */
 S.getUser=async function(){if(!db)return null;try{var r=await db.auth.getSession();S.user=r.data.session?r.data.session.user:null}catch(e){S.user=null}return S.user};

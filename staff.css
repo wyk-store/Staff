@@ -413,3 +413,20 @@ a.ct-i:hover{background:var(--soft)}
 .ipk.on{border-color:var(--red);background:var(--red-s);color:var(--red);box-shadow:0 0 0 2px var(--red-s)}
 .pic{display:block}
 .info-mail{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:6px}
+
+
+/* ---- cohérence du thème : en-tête, menu burger, préférences, pied et surfaces ---- */
+:root{--surface-2:#f8f9fb;--glass:rgba(255,255,255,.82);--glass-brd:rgba(16,18,24,.12);--drawer-bg:#fff;--drawer-ink:#101218;--drawer-muted:#6b7280;--drawer-line:#e5e7ec;--drawer-soft:#f3f4f7;--drawer-hover:rgba(16,18,24,.05)}
+:root[data-theme="dark"]{--surface-2:#17181c;--glass:rgba(16,17,19,.82);--glass-brd:rgba(255,255,255,.13);--drawer-bg:#101113;--drawer-ink:#f4f4f5;--drawer-muted:#9a9ca6;--drawer-line:rgba(255,255,255,.1);--drawer-soft:#16171a;--drawer-hover:rgba(255,255,255,.07)}
+.drawer{background:var(--drawer-bg);color:var(--drawer-ink);border-color:var(--drawer-line);box-shadow:var(--sh)}
+.drawer::before{background:radial-gradient(80% 40% at 100% 0,color-mix(in srgb,var(--red) 18%,transparent),transparent 70%),linear-gradient(118deg,transparent 78%,color-mix(in srgb,var(--red) 8%,transparent) 78.4%,transparent 92%)}
+.dh img{background:var(--drawer-soft)}.dh span,.dme small,.dfoot{color:var(--drawer-muted)}
+.dh .x{color:var(--drawer-ink);background:var(--drawer-hover)}.dscroll{scrollbar-color:var(--line) transparent}
+.dme{background:var(--drawer-soft);border-color:var(--drawer-line)}.dg{color:var(--mut)}
+.dl a:hover,.dl button:hover{background:var(--drawer-hover)}.dl .ico{background:var(--drawer-soft)}.dl .sub{color:var(--mut)}
+.dl a.act{background:var(--red-s)}.dfoot{border-top-color:var(--drawer-line)}
+.top{background:color-mix(in srgb,var(--bg) 84%,transparent);color:var(--ink)}.top .ib{color:var(--ink)}.foot{background:transparent;color:var(--mut)}
+:root[data-theme="light"] .drawer .dl .tgl{background:var(--line)}:root[data-theme="light"] .drawer .dl .tgl::after{transform:translateX(0)}
+:root[data-theme="dark"] .drawer .dl .tgl{background:var(--red)}:root[data-theme="dark"] .drawer .dl .tgl::after{transform:translateX(18px)}
+html{color-scheme:light}html[data-theme="dark"]{color-scheme:dark}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
