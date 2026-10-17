@@ -44,3 +44,61 @@
 @media(max-width:360px){.wyk3d-action{flex-basis:calc(50% - 6px)}}
 @media(orientation:landscape) and (max-height:520px){.wyk3d-stage{height:calc(100dvh - 28px);min-height:250px}.wyk3d-actions{left:auto;right:8px;top:8px;bottom:8px;width:124px;align-content:center;overflow:auto}.wyk3d-action{flex:1 1 100%;min-width:0}.wyk-badge-page main{padding-top:8px}}
 @media(prefers-reduced-motion:reduce){.wyk-badge-page,.wyk3d-stage,.wyk3d-action,.wyk3d-fallback{transition:none!important}.wyk3d-stage{display:none!important}.wyk3d-fallback-hidden{opacity:1!important;position:static!important;inset:auto!important;overflow:visible!important}}
+
+/* WYK STAFF 3D — passe mobile : scène dégagée, commandes séparées et couleurs plus franches. */
+.wyk-badge-page{
+  --scene-top: color-mix(in srgb,var(--bg) 70%,var(--red) 30%);
+}
+:root[data-theme="light"] .wyk-badge-page{
+  --scene-top:#f1f3f8;
+  --scene-bottom:#e2e6ef;
+  --glass:rgba(255,255,255,.96);
+  --glass-brd:rgba(20,25,35,.20);
+  --scene-ink:#11141b;
+  --scene-muted:#424958;
+}
+:root[data-theme="light"] .wyk3d-stage{
+  background:radial-gradient(ellipse at 50% 38%,rgba(243,7,7,.16),transparent 58%),linear-gradient(145deg,#ffffff 0%,#e8ebf2 100%);
+  border-color:rgba(25,30,42,.18);
+  box-shadow:0 18px 48px rgba(28,34,48,.14),inset 0 1px 0 rgba(255,255,255,.95);
+}
+:root[data-theme="light"] .wyk3d-caption{color:#303746;text-shadow:0 1px 0 rgba(255,255,255,.95)}
+:root[data-theme="light"] .wyk3d-action{
+  background:#fff;color:#151821;border-color:#cbd0da;
+  box-shadow:0 3px 10px rgba(20,25,35,.09);
+}
+:root[data-theme="light"] .wyk3d-action:hover,
+:root[data-theme="light"] .wyk3d-action:focus-visible{background:#fff0f1;border-color:#f30707;color:#bd0710}
+.wyk3d-actions{
+  position:relative;inset:auto;z-index:6;width:100%;margin:12px auto 0;
+  display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:8px;padding:8px;
+  overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;
+  border:1px solid var(--glass-brd);border-radius:17px;background:var(--glass);
+  box-shadow:var(--sh-s);-webkit-overflow-scrolling:touch;
+}
+.wyk3d-action{flex:0 0 auto;min-width:82px;min-height:48px}
+.wyk3d-page .wyk3d-fallback-actions{margin-top:12px}
+@media(max-width:600px){
+  .wyk-badge-page main{padding:8px 10px calc(18px + env(safe-area-inset-bottom))}
+  .wyk-badge-page .bdg-pane{width:100%}
+  .wyk3d-stage{
+    height:clamp(290px,calc(100dvh - var(--hdr-h,68px) - 142px - env(safe-area-inset-bottom)),620px);
+    min-height:290px;max-height:calc(100dvh - 120px);border-radius:18px;
+  }
+  .wyk3d-actions{
+    position:relative;left:auto;right:auto;bottom:auto;top:auto;width:100%;margin:10px 0 0;
+    gap:7px;padding:7px;border-radius:15px;
+  }
+  .wyk3d-action{min-width:76px;min-height:48px;padding:0 10px;font-size:11px;border-radius:12px;flex:0 0 auto}
+  .wyk3d-caption{top:8px;left:8px;right:8px;font-size:9px}
+  .wyk-badge-page .bdg-note{margin:12px 2px 0;font-size:12px}
+}
+@media(max-width:380px){
+  .wyk3d-stage{height:clamp(275px,calc(100dvh - var(--hdr-h,64px) - 132px - env(safe-area-inset-bottom)),520px);min-height:275px}
+  .wyk3d-action{min-width:72px;padding:0 8px;font-size:10px}
+}
+@media(orientation:landscape) and (max-height:520px){
+  .wyk3d-stage{height:calc(100dvh - 116px);min-height:210px;max-height:none}
+  .wyk3d-actions{position:relative;inset:auto;width:100%;margin-top:8px;flex-direction:row;max-height:62px}
+  .wyk-badge-page main{padding-top:6px}
+}
