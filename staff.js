@@ -261,98 +261,77 @@ S.posIconSvg=function(key,cls){var d=(PI[key]||PI.star)[1];return'<svg class="pi
 S.iconPicker=function(val,cls){return'<div class="ipick '+(cls||'')+'" data-ipick><input type="hidden" data-f="icon" value="'+esc(val||'')+'"><button type="button" class="ipk'+(val?'':' on')+'" data-k="" title="Automatique (selon l\'intitulé)"><span>Auto</span></button>'+Object.keys(PI).map(function(k){return'<button type="button" class="ipk'+(val===k?' on':'')+'" data-k="'+k+'" title="'+esc(PI[k][0])+'">'+S.posIconSvg(k)+'</button>'}).join('')+'</div>'};
 S.bindIconPickers=function(root){root.addEventListener('click',function(e){var b=e.target.closest('.ipk');if(!b)return;var h=b.closest('[data-ipick]');h.querySelector('[data-f=icon]').value=b.dataset.k;h.querySelectorAll('.ipk').forEach(function(x){x.classList.toggle('on',x===b)})})};
 
-/* ================= BADGE animé (carte d'identité) ================= */
+/* ================= BADGE (reproduction fidèle de la maquette « carte CEO ») : repère de conception 1536×865 ================= */
+var BADGE_ART='<svg class="bdg-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 865" width="1536" height="865" aria-hidden="true"><defs><linearGradient id="bgs" x1="0" y1="0" x2="1000" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#fff"/><stop offset="1" stop-color="#f4f4f4"/></linearGradient><linearGradient id="bgt" x1="1142" y1="241" x2="1233" y2="19" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#280000"/><stop offset="1" stop-color="#ff0000"/></linearGradient><linearGradient id="bgb" x1="-81" y1="138" x2="131" y2="-222" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#8c0000"/><stop offset="1" stop-color="#ff0000"/></linearGradient><linearGradient id="bgy" x1="0" y1="180" x2="0" y2="680" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#202020"/><stop offset="1" stop-color="#121212"/></linearGradient></defs><rect width="1536" height="865" fill="url(#bgs)"/><path d="M1016 0H1536V735H940L1051 624L1139 137Z" fill="#000"/><path d="M1349 672V439L1223 269L1254 219L1380 389L1550 159L1578 209L1408 439V672Z" fill="url(#bgy)"/><path d="M1453 454L1536 347V600H1453Z" fill="#161616"/><rect y="735" width="1536" height="130" fill="#000"/><path d="M1016 0H1228L1443 256L1376 342L1275 232L1130 150L1139 137Z" fill="url(#bgt)"/><path d="M1536 468L1195 865H1290L1536 600Z" fill="url(#bgb)"/><path d="M1536 697L1383 865H1503L1536 830Z" fill="#f70000"/><path d="M89.2 762.5 78.8 766.5 73.5 770.0 68.2 776.0 64.5 782.0 62.2 788.5 61.5 793.5 61.8 802.2 63.8 809.2 66.8 815.2 72.2 822.0 76.2 825.2 86.0 830.2 98.0 831.2 103.2 830.8 112.2 827.5 116.2 825.0 123.2 818.2 127.0 813.0 129.2 806.2 130.8 798.0 130.0 789.8 127.2 781.0 122.8 774.5 119.0 770.8 113.0 766.5 102.5 762.5ZM77.2 817.8 81.2 815.8 83.5 816.2 85.5 819.0 86.5 822.8 85.2 823.8 82.8 823.2 78.8 820.5ZM114.2 817.8 112.2 821.5 108.0 823.5 106.0 822.8 106.0 820.2 109.0 816.0 111.5 815.8ZM90.5 813.5 100.0 813.0 102.5 814.2 102.0 818.2 99.2 823.0 97.0 825.2 94.8 825.0 90.5 819.2 89.5 816.2 89.5 814.5ZM85.5 800.5 87.5 799.0 105.2 799.0 107.0 800.8 106.5 805.8 105.5 807.8 104.0 808.5 100.8 807.8 88.2 808.2 86.0 806.0ZM113.5 799.2 117.0 798.5 124.0 799.2 125.2 800.5 125.2 802.8 122.5 809.5 119.5 812.5 115.5 812.5 111.2 809.5 112.0 800.8ZM78.5 799.2 80.5 801.5 81.0 809.0 78.0 811.2 72.8 813.2 70.2 811.2 67.2 803.8 67.2 800.8 69.0 799.2 74.2 798.5ZM85.8 789.8 86.8 785.8 88.5 784.2 104.0 784.0 106.2 786.8 107.2 791.8 105.0 794.0 88.0 794.0 86.0 792.8ZM112.5 781.2 115.5 779.8 118.2 779.5 121.5 781.8 124.5 789.5 124.5 792.2 123.2 793.8 116.2 794.2 112.2 792.8 110.8 783.2ZM80.8 782.2 81.5 783.2 80.5 791.2 78.8 793.2 76.8 794.0 69.5 794.0 67.8 792.8 67.5 789.8 68.5 786.0 72.0 780.2 74.5 779.5ZM86.2 770.8 86.2 772.8 83.8 776.5 80.8 776.8 78.2 775.0 80.8 771.2 84.0 770.0 85.5 770.0ZM105.5 770.8 106.5 769.8 109.2 770.2 112.5 772.2 113.5 774.8 111.8 776.2 108.5 776.5 105.8 773.2ZM94.5 769.2 95.8 768.8 97.8 769.2 101.5 774.5 102.2 778.0 100.8 779.5 91.8 779.5 90.2 778.5 90.2 776.0 92.5 771.5Z" fill="#e60e11" fill-rule="evenodd"/><path d="M1118.2 693.8 1115.8 693.5 1105.8 702.8 1078.5 734.8 1083.5 734.8 1106.0 707.5 1109.0 705.2 1109.0 707.2 1105.5 714.2 1100.8 728.2 1100.8 734.8 1105.0 734.8 1104.2 731.2 1106.2 723.5 1108.5 717.5 1119.0 696.0ZM1108.2 674.8 1106.0 675.5 1101.5 680.5 1085.5 702.8 1074.5 720.5 1067.8 734.8 1072.0 734.8 1073.5 730.5 1079.2 719.8 1087.2 708.0 1088.2 705.5 1099.0 690.0 1108.5 678.2 1109.2 675.8ZM1153.0 663.5 1150.5 663.0 1149.5 663.8 1152.0 667.5 1151.8 674.5 1149.2 682.2 1142.2 695.2 1132.2 710.2 1126.0 718.0 1116.2 728.5 1107.8 734.8 1114.5 734.8 1115.5 733.2 1116.8 732.8 1129.2 719.5 1142.0 702.2 1150.2 688.0 1154.0 677.5 1155.0 672.8 1155.0 667.8 1154.2 665.0ZM1255.0 653.0 1254.2 652.2 1252.2 652.5 1231.0 671.2 1223.0 677.5 1221.2 678.0 1220.5 676.8 1236.0 650.2 1236.5 647.5 1234.8 646.5 1228.8 654.5 1213.5 682.2 1210.8 685.2 1200.5 690.5 1197.2 694.0 1194.2 695.5 1192.8 695.0 1193.2 693.0 1201.5 680.0 1206.0 670.8 1205.5 667.5 1202.8 667.8 1197.8 671.8 1165.0 702.8 1159.2 707.0 1154.2 709.2 1153.0 707.8 1153.2 705.8 1159.5 694.8 1170.2 681.0 1178.0 673.0 1178.2 670.8 1177.0 670.0 1175.5 670.5 1162.8 683.8 1152.2 698.8 1149.8 704.0 1149.0 707.2 1149.2 710.2 1151.5 712.5 1156.2 712.5 1162.2 709.2 1175.8 698.0 1195.8 678.5 1196.8 678.5 1197.2 679.8 1192.0 689.2 1184.8 700.0 1182.5 702.2 1169.0 711.5 1158.8 720.0 1151.5 727.2 1146.0 734.8 1149.5 734.8 1153.5 729.8 1163.8 719.8 1170.0 714.5 1176.0 710.2 1177.8 709.8 1178.2 710.8 1171.5 720.8 1159.5 734.5 1165.0 734.8 1175.2 722.2 1187.5 703.0 1190.5 700.5 1198.8 695.8 1200.8 696.2 1205.0 695.8 1205.2 696.5 1193.0 717.5 1192.0 720.5 1192.8 723.0 1193.8 723.0 1196.8 719.0 1209.5 696.5 1211.8 694.2 1239.0 696.0 1251.2 698.0 1252.2 697.0 1251.2 695.5 1247.5 694.5 1224.2 691.5 1216.0 691.5 1214.2 690.2 1214.0 689.2 1215.8 687.2 1222.8 682.5 1245.0 664.2 1254.2 655.5ZM1030.2 640.0 1020.0 640.0 1020.0 650.8 1023.5 647.8Z" fill="#fff" fill-rule="evenodd"/><path d="M1264.5 730.5 1261.5 730.0 1257.5 731.0 1246.8 731.5 1221.2 734.5 1184.0 740.5 1167.2 744.2 1155.0 746.0 1153.5 745.2 1146.8 746.8 1146.2 747.8 1126.8 751.5 1120.0 753.5 1104.8 756.5 1047.8 770.8 1024.8 778.5 1020.5 781.8 1019.2 784.8 1020.8 787.0 1023.0 787.5 1053.8 778.5 1060.2 777.2 1067.5 774.5 1099.0 767.0 1116.8 762.0 1134.8 758.2 1149.8 754.2 1167.0 751.2 1173.2 749.2 1199.2 744.2 1213.8 740.5 1239.0 736.2ZM1268.5 729.8 1272.8 730.0 1273.0 729.2 1270.5 729.0Z" fill="#f01010" fill-rule="evenodd"/><rect x="387" y="102" width="4" height="138" fill="#f30707"/><rect x="62" y="597" width="81" height="5" fill="#f30707"/><rect x="374" y="764" width="2" height="56" fill="#fff" opacity=".9"/></svg>';
 S.badgeCard=function(p,o){o=o||{};var np=nameParts(p.full_name),first=np.first||p.full_name||'',last=np.last;
- var nl=Math.max(first.length,last.length),nz=nl<=8?6:nl<=10?5.3:nl<=13?4.5:nl<=17?3.8:3.2;
  var pu=p.photo_url?S.safeUrl(p.photo_url):'';
- var photo=pu?'<img src="'+esc(pu)+'" alt="'+esc(p.full_name)+'">':'<svg class="sil" viewBox="0 0 100 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="100" height="120" fill="#c9cbd1"/><circle cx="50" cy="44" r="19" fill="#0b0b0c"/><path d="M10 120c0-27 17-40 40-40s40 13 40 40z" fill="#0b0b0c"/></svg>';
+ var photo=pu?'<img src="'+esc(pu)+'" alt="'+esc(p.full_name)+'">':'<svg class="sil" viewBox="0 0 100 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="100" height="120" fill="#e9eaee"/><circle cx="50" cy="44" r="19" fill="#0b0b0c"/><path d="M10 120c0-27 17-40 40-40s40 13 40 40z" fill="#0b0b0c"/></svg>';
  var ik=S.posIcon(p.position,p.position_icon);
  var desc='<div class="bdg-desc"><span class="ci">'+S.posIconSvg(ik)+'</span>'+(p.position_desc?'<i></i><p>'+esc(p.position_desc)+'</p>':'')+'</div>';
  var code=p.badge_code||p.employee_code;
  var id=code?'<div class="bdg-id"><small>ID</small><b>'+esc(code)+'</b></div>':'';
  var qr=o.code&&!o.noQr?'<div class="bdg-qr" data-qr="'+esc(S.badgeUrl(o.code))+'" role="button" tabindex="0" aria-label="Agrandir le QR code"></div>':'';
- return'<div class="bdg-wrap"><div class="bdg" data-bdg style="--nz:'+nz+'cqw"><div class="bdg-in">'+
-  '<div class="bdg-art"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="gy"></i></div>'+
-  '<div class="bdg-main"><div class="bdg-top"><img src="'+LOGO_WB+'" alt="WYK"><i></i><div class="bdg-tag">Faites vos achats autrement</div></div>'+
-  '<div class="bdg-name"><span>'+esc(first)+'</span>'+(last?'<em>'+esc(last)+'</em>':'')+'</div><div class="bdg-pos">'+esc(p.position||'Équipe WYK')+'</div><div class="bdg-lr"><div class="bdg-line"></div>'+id+'</div>'+desc+'</div>'+
-  '<div class="bdg-photo">'+photo+'</div>'+qr+'<div class="bdg-sig" aria-hidden="true">WYK</div>'+
-  '<div class="bdg-foot"><span class="gl"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20"/><path d="M4 24h40M24 4c8 8 8 32 0 40M24 4c-8 8-8 32 0 40M8 14h32M8 34h32"/></svg></span><b>wykht.com</b><i></i><span>Connecter les gens, soutenir l\'économie locale.</span></div>'+
+ setTimeout(function(){S.fitBadge();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){S.fitBadge()})},0);
+ return'<div class="bdg-wrap"><div class="bdg" data-bdg><div class="bdg-in">'+BADGE_ART+
+  '<img class="bdg-logo" src="'+LOGO_WB+'" alt="WYK">'+
+  '<div class="bdg-tag">Faites vos<br>achats<br>autrement</div>'+
+  '<div class="bdg-main"><div class="bdg-name"><span>'+esc(first)+'</span>'+(last?'<em>'+esc(last)+'</em>':'')+'</div><div class="bdg-pos">'+esc(p.position||'Équipe WYK')+'</div><div class="bdg-lr"><div class="bdg-line"></div>'+id+'</div>'+desc+'</div>'+
+  '<div class="bdg-photo">'+photo+'</div>'+qr+
+  '<div class="bdg-foot"><b>wykht.com</b><span>Connecter les gens,<br>soutenir l\'économie locale.</span></div>'+
   '</div><div class="bdg-glare"></div></div></div>'};
+/* taille du nom : ajustée pour que la ligne la plus longue remplisse la largeur de la maquette (592 sur 1536) */
+S.fitBadge=function(root){(root||document).querySelectorAll('[data-bdg]').forEach(function(b){var nm=b.querySelector('.bdg-name'),inn=b.querySelector('.bdg-in');if(!nm||!inn)return;var u=inn.offsetWidth/1536;if(!u)return;nm.style.setProperty('--nz','100');var w=0;nm.querySelectorAll('span,em').forEach(function(e){w=Math.max(w,e.offsetWidth)});if(!w)return;nm.style.setProperty('--nz',Math.max(40,Math.min(112,100*592*u/w)).toFixed(2))})};
 S.bindBadge=function(root,o){o=o||{};var b=root.querySelector('[data-bdg]');if(!b)return;
  b.addEventListener('pointermove',function(e){var r=b.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;b.style.setProperty('--ry',((x-.5)*9).toFixed(2)+'deg');b.style.setProperty('--rx',((.5-y)*7).toFixed(2)+'deg');b.style.setProperty('--gx',(x*100).toFixed(0)+'%');b.style.setProperty('--gy',(y*100).toFixed(0)+'%')});
  b.addEventListener('pointerleave',function(){b.style.setProperty('--rx','0deg');b.style.setProperty('--ry','0deg')});
  var q=b.querySelector('.bdg-qr');if(q){var open=function(){S.qrModal({url:S.badgeUrl(o.code),title:o.name||'Badge WYK',sub:'Scannez ce code pour ouvrir le badge en ligne.',extra:'<a class="btn sm" href="/profil?id='+encodeURIComponent(o.code)+'">'+ic('user')+'Voir le profil</a>'})};q.onclick=open;q.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}}}
- S.hydrateQR(b)};
+ S.hydrateQR(b);S.fitBadge(b)};
 
-/* ---------- export du badge : image PNG et PDF à la forme exacte (dessiné à 1920×1080, sans aucune mention « vérifié ») ---------- */
+/* ---------- export du badge : image PNG et PDF (dessiné à 1920×1081, mêmes mesures que l'affichage, sans aucune mention « vérifié ») ---------- */
 S.loadImg=function(u){var one=function(src){return new Promise(function(ok){var i=new Image();i.crossOrigin='anonymous';i.onload=function(){ok(i)};i.onerror=function(){ok(null)};i.src=src})};
  if(!u)return Promise.resolve(null);var bust=u+(u.indexOf('?')>-1?'&':'?')+'wykcors=1';return one(bust).then(function(i){return i||one(u)})};
-S.badgeCanvas=async function(p,o){o=o||{};var W=1920,H=1080,u=W/100,cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d');
- try{await Promise.all([document.fonts.load('800 40px "Bricolage Grotesque"'),document.fonts.load('600 40px "Bricolage Grotesque"'),document.fonts.load('600 40px Caveat'),document.fonts.load('500 20px Inter'),document.fonts.load('700 20px Inter')])}catch(e){}
+S.badgeCanvas=async function(p,o){o=o||{};var W=1920,H=1081,K=W/1536,cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d');
+ try{await Promise.all([800,700,600,500,400].map(function(w){return document.fonts.load(w+' 40px Montserrat')}))}catch(e){}
  var pu=p.photo_url?S.safeUrl(p.photo_url):'';
- var im=await Promise.all([S.loadImg(LOGO_WB),S.loadImg(pu),o.code?S.loadQR():0]);var logo=im[0],ph=im[1];
- var FD='"Bricolage Grotesque",Inter,system-ui,sans-serif',FB='Inter,system-ui,sans-serif',FC='Caveat,"Brush Script MT",cursive';
- var np=nameParts(p.full_name),first=np.first||p.full_name||'',last=np.last,nl=Math.max(first.length,last.length),nz=nl<=8?6:nl<=10?5.3:nl<=13?4.5:nl<=17?3.8:3.2;
+ var art=await new Promise(function(ok){var i=new Image();i.onload=function(){ok(i)};i.onerror=function(){ok(null)};i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(BADGE_ART)});
+ var im=await Promise.all([S.loadImg(pu),o.code?S.loadQR():0,S.loadImg(LOGO_WB)]),ph=im[0],logo=im[2];
+ var FM='Montserrat,Inter,system-ui,sans-serif',RED='#f30707';
+ var np=nameParts(p.full_name),first=np.first||p.full_name||'',last=np.last;
  var rr=function(a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()};
- var fnt=function(w,sz,f){x.font=w+' '+sz+'px '+f};
- var mw=function(t,ls){return x.measureText(t).width+ls*Math.max(0,t.length-1)};
- var tx=function(t,a,b,ls){x.textBaseline='middle';x.textAlign='left';if(!ls){x.fillText(t,a,b);return}var c=a;for(var i=0;i<t.length;i++){x.fillText(t[i],c,b);c+=x.measureText(t[i]).width+ls}};
+ var fnt=function(w,sz){x.font=w+' '+sz+'px '+FM};
+ var mw=function(t,ls){return x.measureText(t).width+ls*Math.max(0,t.length)};
+ var T=function(t,a,b,ls){x.textBaseline='alphabetic';x.textAlign='left';if(!ls){x.fillText(t,a,b);return}var c=a;for(var i=0;i<t.length;i++){x.fillText(t[i],c,b);c+=x.measureText(t[i]).width+ls}};
  var wrap=function(t,maxW,ls){var ws=String(t).split(/\s+/),ln=[],cur='';ws.forEach(function(w){var tr=cur?cur+' '+w:w;if(mw(tr,ls)>maxW&&cur){ln.push(cur);cur=w}else cur=tr});if(cur)ln.push(cur);return ln};
- x.scale(u,u);x.save();rr(0,0,100,56.25,2.2);x.clip();x.fillStyle='#fff';x.fillRect(0,0,100,56.25);
- /* panneau noir + bandes rouges */
- x.save();x.beginPath();x.moveTo(58+.19*42,0);x.lineTo(100,0);x.lineTo(100,56.25);x.lineTo(58,56.25);x.closePath();x.clip();
- x.fillStyle='#0a0a0b';x.fillRect(58,0,42,56.25);
- var g=x.createRadialGradient(93.7,5.6,0,93.7,5.6,28);g.addColorStop(0,'rgba(232,25,44,.45)');g.addColorStop(1,'rgba(232,25,44,0)');x.fillStyle=g;x.fillRect(58,0,42,56.25);
- x.save();x.translate(60,-1);x.rotate(46*Math.PI/180);g=x.createLinearGradient(0,0,62,0);g.addColorStop(0,'#8a0a14');g.addColorStop(.5,'#e8192c');g.addColorStop(1,'#ff3a4a');x.fillStyle=g;x.shadowColor='rgba(232,25,44,.55)';x.shadowBlur=3*u;x.fillRect(0,0,62,6.6);x.restore();
- var band=function(by,h,al){x.save();x.globalAlpha=al;x.translate(106,by);x.rotate(-46*Math.PI/180);var gg=x.createLinearGradient(0,0,-70,0);gg.addColorStop(0,'#ff1a2e');gg.addColorStop(.7,'#a90c1b');gg.addColorStop(1,'rgba(169,12,27,0)');x.fillStyle=gg;x.fillRect(-70,-h,70,h);x.restore()};
- band(56.25-11,3.2,.95);band(56.25-4.5,5.4,.9);
- x.save();x.globalAlpha=.09;x.fillStyle='#fff';x.translate(78,20);x.scale(26,26);x.beginPath();[[0,0],[.28,0],[.5,.4],[.72,0],[1,0],[.6,.62],[.6,1],[.4,1],[.4,.62]].forEach(function(q,i){i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1])});x.closePath();x.fill();x.restore();
- x.restore();
- /* colonne de gauche : mise en page centrée verticalement */
- var Y0=2.2,AH=56.25-9.6-2.2,logoH=11,logoW=logo?logoH*logo.naturalWidth/logo.naturalHeight:15;
- fnt(600,2.3,FD);var tag=wrap('Faites vos achats autrement',20,0),tagLH=2.3*1.15,topH=Math.max(logoH,tag.length*tagLH);
- var nls=-.035*nz;fnt(800,nz,FD);var nameL=wrap(first,56,nls).map(function(t){return[t,'#0d0e11']}).concat(last?wrap(last,56,nls).map(function(t){return[t,'#e8192c']}):[]),nameLH=nz*.98;
- var posT=String(p.position||'Équipe WYK').toUpperCase(),pls=.17*2.1;fnt(800,2.1,FD);var posL=wrap(posT,44,pls),posLH=2.1*1.32;
- var code=p.badge_code||p.employee_code,lrH=code?3.4:.42;
- var dtxt=p.position_desc||'',dLH=1.55*1.36;fnt(500,1.55,FB);var dL=dtxt?wrap(dtxt,33,0):[],dH=Math.max(4.7,dL.length*dLH);
- var total=topH+1.1+nameL.length*nameLH+1+posL.length*posLH+1.1+lrH+1.2+dH,y=Y0+Math.max(0,(AH-total)/2);
- /* haut : logo | accroche */
- var cy=y+topH/2,lx=3.6;
- if(logo)x.drawImage(logo,lx,cy-logoH/2,logoW,logoH);else{fnt(800,7,FD);x.fillStyle='#0d0e11';tx('WYK',lx,cy,0)}
- var dx=lx+logoW+2.4;x.fillStyle='#e8192c';x.fillRect(dx,cy-4,.2,8);
- fnt(600,2.3,FD);x.fillStyle='#16181d';var ty=cy-tag.length*tagLH/2+tagLH/2;tag.forEach(function(t,i){tx(t,dx+2.4,ty+i*tagLH,0)});
- y+=topH+1.1;
- /* nom */
- fnt(800,nz,FD);nameL.forEach(function(l,i){x.fillStyle=l[1];tx(l[0],3.6,y+nameLH*i+nameLH/2,nls)});y+=nameL.length*nameLH+1;
+ x.scale(K,K);x.save();rr(0,0,1536,865,30);x.clip();x.fillStyle='#fff';x.fillRect(0,0,1536,865);
+ if(art)x.drawImage(art,0,0,1536,865);
+ if(logo)x.drawImage(logo,62,63,220*logo.naturalWidth/logo.naturalHeight,220);
+ /* accroche */
+ fnt(500,44);x.fillStyle='#111';['Faites vos','achats','autrement'].forEach(function(t,i){T(t,421,101+48*i+39.8,0)});
+ /* nom : taille ajustée comme à l'écran */
+ var nls=-.02;fnt(800,100);var w100=Math.max(mw(first,nls*100),last?mw(last,nls*100):0),nz=Math.max(40,Math.min(112,100*592/(w100||1)));
+ var y=305;fnt(800,nz);x.fillStyle='#000';T(first,62,y+.808*nz,nls*nz);y+=nz*.9;
+ if(last){x.fillStyle=RED;T(last,62,y+.808*nz,nls*nz);y+=nz*.9}
  /* poste */
- fnt(800,2.1,FD);x.fillStyle='#0d0e11';posL.forEach(function(t,i){tx(t,3.6,y+posLH*i+posLH/2,pls)});y+=posL.length*posLH+1.1;
+ y+=5;var pls=.13*34;fnt(600,34);x.fillStyle='#000';var pl=wrap(String(p.position||'Équipe WYK').toUpperCase(),610,pls).slice(0,2);pl.forEach(function(t,i){T(t,62,y+42*i+33.2,pls)});y+=42*pl.length;
  /* trait rouge + ID */
- var ly=y+lrH/2;x.fillStyle='#e8192c';rr(3.6,ly-.21,7.6,.42,.2);x.fill();
- if(code){var bx=3.6+7.6+2;fnt(700,1.6,FB);var ls=.08*1.6,w1=mw('ID',ls),w2=mw(code,ls),cw=1.4+w1+1+w2+1.4;
-  x.strokeStyle='#e8192c';x.lineWidth=.16;rr(bx,ly-1.7,cw,3.4,.8);x.stroke();x.fillStyle='#e8192c';tx('ID',bx+1.4,ly+.05,ls);x.fillStyle='#14161c';tx(code,bx+1.4+w1+1,ly+.05,ls)}
- y+=lrH+1.2;
+ var code=p.badge_code||p.employee_code;x.fillStyle=RED;x.fillRect(62,y+19.5,81,5);
+ if(code){fnt(700,22);var ls2=.08*22,w1=mw('ID',ls2),w2=mw(code,ls2),bx=143+28,cw=20+w1+12+w2+20;x.strokeStyle=RED;x.lineWidth=2.5;rr(bx,y+2,cw,40,12);x.stroke();x.fillStyle=RED;T('ID',bx+20,y+22+8,ls2);x.fillStyle='#111';T(code,bx+20+w1+12,y+22+8,ls2)}
+ y+=44;
  /* icône du poste + description */
- var ik=S.posIcon(p.position,p.position_icon);x.save();x.translate(3.6,y);x.scale(5.6/48,5.6/48);x.lineWidth=2;x.lineCap='round';x.lineJoin='round';x.strokeStyle='#e8192c';x.stroke(new Path2D((PI[ik]||PI.star)[1]));x.restore();
- if(dL.length){x.fillStyle='#e8192c';x.fillRect(3.6+5.6+1.6,y,.14,dH);fnt(500,1.55,FB);x.fillStyle='#2a2d35';dL.forEach(function(t,i){tx(t,3.6+5.6+1.6+.14+1.6,y+dLH*i+dLH/2,0)})}
+ var ik=S.posIcon(p.position,p.position_icon);x.save();x.translate(50.4,y-1.4);x.scale(102.2/48,102.2/48);x.lineWidth=2;x.lineCap='round';x.lineJoin='round';x.strokeStyle=RED;x.stroke(new Path2D((PI[ik]||PI.star)[1]));x.restore();
+ if(p.position_desc){x.fillStyle=RED;x.fillRect(170,y+7,4,66);fnt(400,22);x.fillStyle='#111';wrap(p.position_desc,570,0).slice(0,2).forEach(function(t,i){T(t,201,y+5+30*i+22.9,0)})}
  /* photo */
- x.save();x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=4*u;x.shadowOffsetY=1.6*u;x.fillStyle='#cfd1d6';rr(55.4,9,27,30.6,2.1);x.fill();x.restore();
- x.save();rr(55.4,9,27,30.6,2.1);x.clip();
- if(ph){var sc=Math.max(27/ph.naturalWidth,30.6/ph.naturalHeight),w=ph.naturalWidth*sc,h=ph.naturalHeight*sc;x.drawImage(ph,55.4+(27-w)/2,9+(30.6-h)/2,w,h)}
- else{x.fillStyle='#c9cbd1';x.fillRect(55.4,9,27,30.6);x.fillStyle='#0b0b0c';x.translate(55.4,9-.9);x.scale(.27,.27);x.beginPath();x.arc(50,44,19,0,7);x.fill();x.fill(new Path2D('M10 120c0-27 17-40 40-40s40 13 40 40z'))}
- x.restore();x.strokeStyle='rgba(232,25,44,.18)';x.lineWidth=.5;rr(55.4-.4,9-.4,27.8,31.4,2.4);x.stroke();
- x.strokeStyle='#e8192c';x.lineWidth=.38;rr(55.4+.19,9+.19,27-.38,30.6-.38,1.95);x.stroke();
- /* QR en bas à droite */
- if(o.code&&window.qrcode){var qx=83.2,qy=30.25,qs=15;x.save();x.shadowColor='rgba(0,0,0,.4)';x.shadowBlur=3*u;x.shadowOffsetY=1*u;x.fillStyle='#fff';rr(qx,qy,qs,qs,1.6);x.fill();x.restore();x.strokeStyle='#e8192c';x.lineWidth=.28;rr(qx+.14,qy+.14,qs-.28,qs-.28,1.5);x.stroke();
-  var q=window.qrcode(0,'M');q.addData(S.badgeUrl(o.code));q.make();var n=q.getModuleCount(),pad=1.1+.28,m=(qs-2*pad)/n;x.fillStyle='#0b0b0c';for(var r=0;r<n;r++)for(var c=0;c<n;c++)if(q.isDark(r,c))x.fillRect(qx+pad+c*m,qy+pad+r*m,m+.03,m+.03)}
- /* signature */
- fnt(600,6,FC);var sw=x.measureText('WYK').width;x.save();x.translate(64+sw/2,39.6+3);x.rotate(-9*Math.PI/180);x.shadowColor='rgba(0,0,0,.4)';x.shadowBlur=1*u;x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';x.fillText('WYK',0,0);x.restore();
- x.save();x.translate(64+sw/2,39.6+3);x.rotate(-9*Math.PI/180);x.translate(0,4.05);x.rotate(3*Math.PI/180);var ux=-sw/2-.12*sw,uw=sw*1.26;g=x.createLinearGradient(ux,0,ux+uw,0);g.addColorStop(0,'rgba(232,25,44,0)');g.addColorStop(.25,'#e8192c');g.addColorStop(1,'#ff4a5a');x.fillStyle=g;rr(ux,-.25,uw,.5,.25);x.fill();x.restore();
- /* pied noir */
- x.fillStyle='#0a0a0b';x.fillRect(0,56.25-9.6,100,9.6);var fy=56.25-9.6/2;
- x.save();x.translate(3.6,fy-2.6);x.scale(5.2/48,5.2/48);x.lineWidth=2.2;x.strokeStyle='#e8192c';x.lineCap='round';x.beginPath();x.arc(24,24,20,0,7);x.stroke();x.stroke(new Path2D('M4 24h40M24 4c8 8 8 32 0 40M24 4c-8 8-8 32 0 40M8 14h32M8 34h32'));x.restore();
- fnt(600,2.7,FD);x.fillStyle='#fff';var fx=3.6+5.2+2.4;tx('wykht.com',fx,fy,-.027);var fw=mw('wykht.com',-.027);
- x.fillStyle='rgba(255,255,255,.7)';x.fillRect(fx+fw+2.4,fy-2.8,.16,5.6);
- fnt(500,1.5,FB);x.fillStyle='#d8d9de';var fl=wrap("CONNECTER LES GENS, SOUTENIR L'ÉCONOMIE LOCALE.",34,.3),flh=1.5*1.55;fl.forEach(function(t,i){tx(t,fx+fw+2.4+.16+2.4,fy-fl.length*flh/2+flh/2+i*flh,.3)});
+ x.fillStyle='#d10c0c';rr(825,140,452,491,3);x.fill();x.fillStyle='#fff';rr(830,145,442,481,1.5);x.fill();
+ x.save();rr(834,149,434,473,1);x.clip();
+ if(ph){var sc=Math.max(434/ph.naturalWidth,473/ph.naturalHeight),w=ph.naturalWidth*sc,h=ph.naturalHeight*sc;x.drawImage(ph,834+(434-w)/2,149+(473-h)/2,w,h)}
+ else{x.fillStyle='#e9eaee';x.fillRect(834,149,434,473);x.fillStyle='#0b0b0c';x.translate(834,149-14);x.scale(4.34,4.34);x.beginPath();x.arc(50,44,19,0,7);x.fill();x.fill(new Path2D('M10 120c0-27 17-40 40-40s40 13 40 40z'))}
+ x.restore();
+ /* QR */
+ if(o.code&&window.qrcode){var qx=1302,qy=390,qs=164;x.save();x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=26;x.shadowOffsetY=8;x.fillStyle='#fff';rr(qx,qy,qs,qs,13);x.fill();x.restore();x.strokeStyle=RED;x.lineWidth=3;rr(qx+1.5,qy+1.5,qs-3,qs-3,12);x.stroke();
+  var q=window.qrcode(0,'M');q.addData(S.badgeUrl(o.code));q.make();var n=q.getModuleCount(),pad=13,m=(qs-2*pad)/n;x.fillStyle='#0b0b0c';for(var r=0;r<n;r++)for(var c=0;c<n;c++)if(q.isDark(r,c))x.fillRect(qx+pad+c*m,qy+pad+r*m,m+.3,m+.3)}
+ /* pied */
+ fnt(600,32);x.fillStyle='#fff';T('wykht.com',155,809,-.3);
+ fnt(500,20);x.fillStyle='#e4e4e8';['CONNECTER LES GENS,',"SOUTENIR L'ÉCONOMIE LOCALE."].forEach(function(t,i){T(t,435,765.6+25.5*i+19.9,.09*20)});
  x.restore();return cv};
 S.save=function(blob,name){var a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download=name;a.style.display='none';document.body.appendChild(a);a.click();setTimeout(function(){a.remove();URL.revokeObjectURL(url)},4000)};
 S.pdfFromJpeg=function(jpg,w,h){var pw=841.89,ph=+(pw*h/w).toFixed(2),enc=new TextEncoder(),parts=[],len=0,off=[];
