@@ -247,11 +247,29 @@ a.ct-i:hover{background:var(--soft)}
 .cvp{display:none}
 
 /* ================= BADGE (reproduction fidèle de la maquette, repère 1536×865) ================= */
-.bdg-wrap{perspective:1200px;width:min(100%,920px);margin:0 auto;animation:bdgfloat 7s ease-in-out infinite}
+.bdg-wrap{perspective:1800px;width:min(100%,920px);margin:0 auto;animation:bdgfloat 7s ease-in-out infinite;filter:drop-shadow(0 28px 22px rgba(12,14,20,.18))}
 @keyframes bdgfloat{50%{transform:translateY(-6px)}}
-.bdg{position:relative;container-type:inline-size;aspect-ratio:1536/865;border-radius:clamp(14px,2vw,22px);overflow:hidden;background:#fff;color:#000;box-shadow:0 30px 70px -20px rgba(16,18,24,.45),0 8px 20px rgba(16,18,24,.12);transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .25s ease-out;transform-style:preserve-3d;font-family:Montserrat,var(--fb),sans-serif;isolation:isolate}
+.bdg{position:relative;container-type:inline-size;aspect-ratio:1536/865;border-radius:clamp(18px,2.4vw,28px);overflow:visible;background:#fff;color:#000;box-shadow:0 2px 0 #d7d7da,0 5px 0 #b9bbc0,0 8px 0 #f7f7f8,0 15px 28px rgba(0,0,0,.22),0 34px 65px -20px rgba(16,18,24,.38);transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .28s cubic-bezier(.2,.75,.25,1),box-shadow .3s ease;transform-style:preserve-3d;font-family:Montserrat,var(--fb),sans-serif;isolation:isolate;outline:1px solid rgba(255,255,255,.8);outline-offset:-1px}
+.bdg:before{content:"";position:absolute;z-index:-1;inset:5px -5px -7px 5px;border-radius:inherit;background:linear-gradient(145deg,#fdfdfd 0%,#bfc1c6 25%,#f8f8f9 48%,#aeb1b7 70%,#ededee 100%);transform:translateZ(-1px);box-shadow:0 10px 20px rgba(0,0,0,.12)}
 .bdg *{box-sizing:border-box}
-.bdg-in{position:absolute;inset:0;container-type:inline-size;--u:calc(100cqw/1536)}
+.bdg-flipper{position:absolute;inset:0;border-radius:inherit;transform-style:preserve-3d;transition:transform .85s cubic-bezier(.2,.75,.25,1)}
+.bdg.is-flipped .bdg-flipper{transform:rotateY(180deg)}
+.bdg-in,.bdg-back{position:absolute;inset:0;overflow:hidden;border-radius:inherit;backface-visibility:hidden;-webkit-backface-visibility:hidden;container-type:inline-size;--u:calc(100cqw/1536)}
+.bdg-in{background:#fff;transform:rotateY(0deg)}
+.bdg-back{transform:rotateY(180deg);background:linear-gradient(145deg,#fff 0%,#fafafa 58%,#f0f0f2 100%);color:#17171a;display:flex;align-items:center;justify-content:center;text-align:center;border:1px solid rgba(255,255,255,.95)}
+.bdg-back:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 15% 5%,rgba(255,255,255,.98),transparent 46%),linear-gradient(125deg,transparent 0 68%,rgba(220,20,35,.07) 68.2%,transparent 84%);pointer-events:none}
+.bdg-back:after{content:"";position:absolute;inset:calc(var(--u)*20);border:calc(var(--u)*2) solid #e7e7e9;border-radius:calc(var(--u)*22);pointer-events:none}
+.bdg-back-content{position:relative;z-index:1;width:100%;padding:calc(var(--u)*70);display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*20)}
+.bdg-back-logo{width:calc(var(--u)*180);height:calc(var(--u)*180);object-fit:contain;filter:drop-shadow(0 4px 5px rgba(0,0,0,.08))}
+.bdg-back-brand{font-size:calc(var(--u)*64);font-weight:800;letter-spacing:.14em;color:#111}
+.bdg-back-rule{width:calc(var(--u)*100);height:calc(var(--u)*7);background:#f30707;border-radius:99px;box-shadow:0 2px 3px rgba(243,7,7,.2)}
+.bdg-back-copy{font-size:calc(var(--u)*25);line-height:1.55;letter-spacing:.1em;text-transform:uppercase;color:#555;max-width:75%}
+.bdg-back-url{font-size:calc(var(--u)*30);font-weight:800;letter-spacing:.03em;color:#e10c16}
+.bdg-back-small{font-size:calc(var(--u)*17);letter-spacing:.12em;color:#888}
+.bdg-flip-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;margin:12px auto 0;padding:11px 17px;border:1px solid rgba(30,30,35,.13);border-radius:999px;background:linear-gradient(180deg,#fff,#f4f4f6);color:#222;font:600 13px/1.2 Inter,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,.07);cursor:pointer;transition:transform .2s,box-shadow .2s}
+.bdg-flip-btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,.11)}
+.bdg-flip-btn:focus-visible{outline:3px solid #f30707;outline-offset:3px}
+.bdg-flip-btn .flip-arrow{font-size:17px;color:#e10c16}
 .bdg-art{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
 .bdg-corner{position:absolute;left:calc(var(--u)*870);top:0;width:calc(var(--u)*666);height:100%;z-index:1;display:block;-webkit-mask-image:linear-gradient(90deg,transparent,#000 calc(var(--u)*60));mask-image:linear-gradient(90deg,transparent,#000 calc(var(--u)*60))}
 .bdg-logo{position:absolute;left:calc(var(--u)*62);top:calc(var(--u)*63);height:calc(var(--u)*220);width:auto;z-index:2}
@@ -282,7 +300,8 @@ a.ct-i:hover{background:var(--soft)}
 /* version portrait (écrans étroits) */
 .bdg-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:26px}
 .bdg-note{text-align:center;font-size:13px;color:var(--mut);margin-top:14px}
-.bdg-host{padding:8px 0}
+.bdg-host{padding:12px 0 4px;text-align:center}
+@media(max-width:560px){.bdg-flip-btn{margin-top:10px}.bdg-wrap{filter:drop-shadow(0 16px 14px rgba(12,14,20,.16))}}
 .bdg-pane{display:grid;gap:18px}
 .linkbox{display:flex;gap:10px;flex-wrap:wrap}.linkbox input{flex:1;min-width:200px;font-size:14px}
 
@@ -377,7 +396,9 @@ a.ct-i:hover{background:var(--soft)}
   body.print-badge .bdg-host{padding:20mm 12mm}
   body.print-badge .bdg-wrap{width:100%;animation:none!important;transform:none!important;perspective:none}
   body.print-badge .bdg,body.print-badge .bdg *{animation:none!important;transition:none!important;opacity:1!important}
-  body.print-badge .bdg{transform:none!important;box-shadow:none;border:1px solid #ddd}
+  body.print-badge .bdg{transform:none!important;box-shadow:none;border:1px solid #ddd;overflow:hidden}
+  body.print-badge .bdg-flipper{transform:none!important}
+  body.print-badge .bdg-back,body.print-badge .bdg-flip-btn{display:none!important}
   body.print-badge .bdg::after,body.print-badge .bdg-glare{display:none}
   body.print-badge .bdg-art,body.print-badge .bdg-photo.fx{transform:none!important}
   body.print-badge .bdg.nr .bdg-photo{transform:translateX(-50%)!important}
