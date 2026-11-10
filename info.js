@@ -40,7 +40,7 @@ confidentialite:{t:'Politique de confidentialité',e:'Vos données',lead:"Cette 
  ['Stockage local et cookies','<p>Le portail <b>n\'utilise aucun cookie publicitaire ni outil d\'analyse</b>. Il utilise le stockage local de votre navigateur uniquement pour : votre session de connexion, votre préférence de thème (clair/sombre), le compteur anti-abus de connexion et, le temps d\'une activation, les informations saisies en attente de confirmation de votre email.</p>'],
  ['Personnes mineures','<p>WYK STAFF est destiné aux personnes majeures ou autorisées à travailler selon la législation applicable. N\'y renseignez pas les informations d\'un tiers.</p>'],
  ['Modifications de cette politique','<p>Cette politique peut évoluer. La date de dernière mise à jour figure en haut de la page ; en cas de changement important, les utilisateurs en sont informés sur le portail.</p>'],
- ['Nous contacter','<p>Pour toute question ou demande liée à vos données : <a href="'+WA+'" target="_blank" rel="noopener">WhatsApp '+TEL+'</a> ou <a href="/info?p=contact">page Contact</a>.</p>']]},
+ ['Nous contacter','<p>Pour toute question ou demande liée à vos données : <a href="mailto:contact@wykht.com">contact@wykht.com</a>, <a href="'+WA+'" target="_blank" rel="noopener">WhatsApp '+TEL+'</a> ou <a href="/info?p=contact">page Contact</a>.</p>']]},
 
 conditions:{t:"Conditions d'utilisation",e:'Règles du portail',lead:"Ces conditions encadrent l'utilisation de WYK STAFF. En activant votre profil ou en l'utilisant, vous les acceptez.",num:1,
  meta:[['clock','Dernière mise à jour : '+UPD]],
@@ -55,7 +55,7 @@ conditions:{t:"Conditions d'utilisation",e:'Règles du portail',lead:"Ces condit
  ['Disponibilité et responsabilité','<p>WYK met tout en œuvre pour assurer un service accessible et sécurisé, sans garantie d\'absence d\'interruption. WYK ne peut être tenue responsable des contenus publiés par les utilisateurs ni des interruptions dues à des prestataires tiers ou à des cas de force majeure.</p>'],
  ['Suspension et fin d\'accès','<p>WYK peut modifier, désactiver, suspendre ou placer un profil en examen, notamment en cas de non-respect de ces conditions, de fin de collaboration ou de suspicion de fraude. Vous pouvez demander la fermeture de votre profil à tout moment.</p>'],
  ['Droit applicable et modifications','<p>Ces conditions sont régies par le droit applicable en Haïti. WYK peut les modifier ; la date de mise à jour figure en haut de la page. L\'utilisation continue du portail vaut acceptation.</p>'],
- ['Contact','<p>Une question sur ces conditions ? <a href="'+WA+'" target="_blank" rel="noopener">WhatsApp '+TEL+'</a> ou <a href="/info?p=contact">page Contact</a>.</p>']]},
+ ['Contact','<p>Une question sur ces conditions ? <a href="mailto:contact@wykht.com">contact@wykht.com</a>, <a href="'+WA+'" target="_blank" rel="noopener">WhatsApp '+TEL+'</a> ou <a href="/info?p=contact">page Contact</a>.</p>']]},
 
 contact:{t:'Nous contacter',e:'Support WYK',lead:"Une question sur votre profil, un code qui ne fonctionne pas, une modification impossible à faire vous-même ? Voici les bons canaux.",num:0,
  meta:[['wa',TEL],['mail','contact@wykht.com'],['globe','wykht.com']],

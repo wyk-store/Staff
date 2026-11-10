@@ -534,3 +534,7 @@ a.ct-i:hover{background:var(--soft)}
 :root[data-theme="dark"] .drawer .dl .tgl{background:var(--red)}:root[data-theme="dark"] .drawer .dl .tgl::after{transform:translateX(18px)}
 html{color-scheme:light}html[data-theme="dark"]{color-scheme:dark}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* Email dans le menu */
+.dfoot .dmail{display:inline-block;margin-bottom:6px;font-weight:600;font-size:13px;color:#ff5b6a;text-decoration:none}
+.dfoot .dmail:hover{text-decoration:underline}
