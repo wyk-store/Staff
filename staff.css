@@ -538,3 +538,70 @@ html{color-scheme:light}html[data-theme="dark"]{color-scheme:dark}
 /* Email dans le menu */
 .dfoot .dmail{display:inline-block;margin-bottom:6px;font-weight:600;font-size:13px;color:#ff5b6a;text-decoration:none}
 .dfoot .dmail:hover{text-decoration:underline}
+
+
+/* ===== v5 : logos selon le thème, accueil, inscription, suivi de dossier, sécurité admin ===== */
+.lg-d{display:none!important}
+:root[data-theme="dark"] .lg-l{display:none!important}
+:root[data-theme="dark"] .lg-d{display:block!important}
+.brand img{object-fit:contain}
+.hero-brand{display:flex;justify-content:center;margin:0 auto 18px}
+.hero-brand img{height:clamp(54px,11vw,84px);width:auto;max-width:78vw;object-fit:contain}
+.hd-login{gap:8px;padding:9px 16px;flex:none}
+.hd-login .ic{width:18px;height:18px}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:26px auto 4px;max-width:520px}
+.cta .btn{flex:1 1 200px}
+.btn.lg{padding:16px 26px;font-size:16px;min-height:56px;border-radius:16px}
+.sec-t{text-align:center;font-size:clamp(22px,3.6vw,30px);margin:44px 0 0}
+.sec-s{text-align:center;color:var(--mut);max-width:52ch;margin:8px auto 0;font-size:15px}
+.steps.feat .step::before{display:none}
+.steps.feat{margin-top:22px}
+@media(max-width:860px){.steps{grid-template-columns:1fr}}
+@media(max-width:430px){.hd-login span{display:none}.hd-login{width:44px;padding:0;border-radius:14px}}
+
+/* parcours d'inscription */
+.rg-wrap{max-width:620px}
+.rg-lead{color:var(--t2);font-size:15px;margin:-4px 0 18px;line-height:1.55}
+.rg-box{padding:15px 16px;border-radius:14px;background:var(--soft);border:1px solid var(--line);font-size:14px;line-height:1.55;color:var(--t2);margin:0 0 18px}
+.rg-box b{color:var(--ink)}
+.rg-sum{display:grid;gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:18px}
+.rg-sum>div{display:flex;justify-content:space-between;gap:14px;padding:11px 14px;font-size:14px;border-bottom:1px solid var(--line)}
+.rg-sum>div:last-child{border-bottom:0}.rg-sum small{color:var(--mut);flex:none}.rg-sum span{text-align:right;word-break:break-word;font-weight:600}
+.rg-pw{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:20px;letter-spacing:.08em;word-break:break-all}
+.rg-warn{padding:14px 16px;border-radius:14px;background:rgba(217,119,6,.13);color:var(--warn);font-size:14px;line-height:1.5;margin-bottom:16px;font-weight:500}
+:root[data-theme="dark"] .rg-warn{color:#fbbf24}
+.rg-ref{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:clamp(26px,7vw,36px);font-weight:700;letter-spacing:.1em;text-align:center;padding:18px;border-radius:16px;background:var(--soft);border:1.5px dashed var(--red);margin:14px 0}
+.rg-acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}.rg-acts .btn{flex:1 1 180px}
+
+/* ligne de temps du dossier */
+.tl2{position:relative;display:grid;gap:0;margin:6px 0 18px}
+.tl2>div{position:relative;display:flex;gap:14px;padding-bottom:20px}
+.tl2>div:last-child{padding-bottom:0}
+.tl2>div::before{content:"";position:absolute;left:15px;top:32px;bottom:0;width:2px;background:var(--line)}
+.tl2>div:last-child::before{display:none}
+.tl2 .dt{width:32px;height:32px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--soft);border:2px solid var(--line);color:var(--mut);z-index:1}
+.tl2 .dt .ic{width:16px;height:16px}
+.tl2 .on .dt{background:var(--ok);border-color:var(--ok);color:#fff}
+.tl2 .cur .dt{background:var(--card);border-color:var(--red);color:var(--red);box-shadow:0 0 0 5px var(--red-s);animation:rgpulse 2s infinite}
+.tl2 b{display:block;font-size:15px}.tl2 span.s{font-size:13px;color:var(--mut)}
+@keyframes rgpulse{50%{box-shadow:0 0 0 9px transparent}}
+.dos-list{margin:0 0 18px;padding-left:18px;color:var(--t2);font-size:14.5px;line-height:1.6}.dos-list li{margin-bottom:6px}
+
+/* administration : inscriptions et sécurité */
+.side button{position:relative}
+.cnt{margin-left:auto;min-width:22px;height:22px;padding:0 7px;border-radius:99px;background:var(--red);color:#fff;font-size:12px;display:grid;place-items:center;font-weight:700}
+.side button.on .cnt{background:#fff;color:var(--red)}
+.flags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.flag{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--soft);border:1px solid var(--line);color:var(--mut)}
+.flag.bad{background:rgba(220,38,38,.12);color:var(--bad);border-color:transparent}
+.flag.warn{background:rgba(217,119,6,.14);color:var(--warn);border-color:transparent}
+.pill.success{color:var(--ok);background:var(--ok-s)}.pill.fail{color:var(--bad);background:rgba(220,38,38,.12)}
+.pill.blocked{color:var(--warn);background:rgba(217,119,6,.14)}.pill.cleared{color:var(--mut)}
+.pill.submitted{color:#2563eb;background:rgba(37,99,235,.12)}.pill.approved{color:var(--ok);background:var(--ok-s)}.pill.rejected{color:var(--bad);background:rgba(220,38,38,.12)}
+.li.lg{padding:11px 14px;gap:12px;cursor:pointer}.li.lg:hover{border-color:color-mix(in srgb,var(--red) 35%,var(--line))}
+.li.lg .info{min-width:150px}.li.lg .info b{font-size:15px}
+.kv{display:grid;gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:12px 0}
+.kv>div{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:9px 13px;border-bottom:1px solid var(--line);font-size:13.5px}
+.kv>div:last-child{border-bottom:0}.kv small{color:var(--mut);font-weight:600}.kv span{word-break:break-word;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+@media(max-width:520px){.kv>div{grid-template-columns:1fr;gap:2px}}
+.seg{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}

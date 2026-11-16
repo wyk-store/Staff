@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://byrklytqoucdskzvcoau.supabase.co wss://byrklytqoucdskzvcoau.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"><meta name="referrer" content="strict-origin-when-cross-origin"><meta name="color-scheme" content="light dark">
+<title>Mon dossier — WYK STAFF</title><meta name="robots" content="noindex, nofollow, noarchive">
+<link rel="icon" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&family=Caveat:wght@600&display=swap">
+<link rel="stylesheet" href="/staff.css">
+</head><body>
+<header id="top"></header>
+<main><div class="wrap rg-wrap" id="root"><div class="nm card empty">Chargement…</div></div></main>
+<footer id="foot"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="/staff.js"></script>
+<script>
+(async function(){
+  var root=document.getElementById('root'),esc=S.esc,db=S.db,timer=null;
+  var user=await S.shell('');
+  if(!user){location.href=S.LOGIN;return}
+  if(S.admin){location.href='/admin';return}
+  var ago=function(d){return S.dateShort(d)+' · '+new Date(d).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})};
+  var tl=function(items){return'<div class="tl2">'+items.map(function(i){return'<div class="'+i[0]+'"><span class="dt">'+S.ic(i[1])+'</span><div><b>'+i[2]+'</b><span class="s">'+i[3]+'</span></div></div>'}).join('')+'</div>'};
+  var bar='<div class="rg-acts" style="margin-top:18px"><button class="btn" id="rf"></button><button class="btn" id="lo"></button></div>';
+  function bind(){var r=document.getElementById('rf'),l=document.getElementById('lo');if(r){r.innerHTML=S.ic('clock')+'Actualiser';r.onclick=load}if(l){l.innerHTML=S.ic('logout')+'Se déconnecter';l.onclick=S.logout}}
+  async function load(){
+    clearTimeout(timer);
+    var r=await db.rpc('staff_my_registration');
+    if(r.error){root.innerHTML='<div class="nm card"><div class="msg">'+esc(/staff_my_registration|schema cache/i.test(r.error.message)?'Le suivi de dossier n\'est pas encore activé. Contactez l\'administration WYK (contact@wykht.com).':r.error.message)+'</div></div>';return}
+    var g=r.data||{state:'none'};
+    if(g.state==='approved'){location.href='/moi?bienvenue=1';return}
+    if(g.state==='pending'){
+      root.innerHTML='<section class="nm card"><span class="pill pending">En cours d\'examen</span><h2 style="font-size:clamp(24px,5vw,30px);margin:10px 0 4px">Votre dossier est en cours</h2><p class="mut" style="margin-bottom:6px">Bonjour <b>'+esc(g.first_name)+'</b>, l\'administration WYK examine votre demande.</p><div class="rg-ref">'+esc(g.ref)+'</div>'+
+      tl([['on','check','Dossier envoyé',esc(ago(g.created_at))],['cur','clock','Examen par l\'administration','Vous serez prévenu dès la décision : revenez sur cette page.'],['','badge','Décision','Approbation ou refus']])+
+      '<div class="rg-sum"><div><small>Nom</small><span>'+esc(g.first_name+' '+g.last_name)+'</span></div>'+(g.position?'<div><small>Poste souhaité</small><span>'+esc(g.position)+'</span></div>':'')+'<div><small>Envoyé le</small><span>'+esc(S.date(g.created_at,'full'))+'</span></div></div>'+
+      '<h4 style="margin-bottom:8px">Et après l\'approbation ?</h4><ul class="dos-list"><li>Votre <b>ID employé</b> (ex. WYK-XXX-001) est créé : c\'est lui, avec votre mot de passe, qui vous servira ensuite à vous connecter.</li><li>Vous pourrez <b>modifier et compléter votre profil en profondeur</b> : photo, parcours, compétences, CV. Une erreur dans votre dossier ? Vous la corrigerez à ce moment-là.</li></ul>'+
+      '<p class="small mut">Une question ? <a href="mailto:'+S.MAIL+'" style="color:var(--red);font-weight:600">'+S.MAIL+'</a> · Cette page se met à jour automatiquement.</p>'+bar+'</section>';
+      bind();timer=setTimeout(load,60000);return}
+    if(g.state==='rejected'){
+      root.innerHTML='<section class="nm card"><span class="pill rejected">Dossier refusé</span><h2 style="font-size:clamp(24px,5vw,30px);margin:10px 0 8px">Votre demande n\'a pas été retenue</h2>'+(g.reason?'<div class="msg">Motif : '+esc(g.reason)+'</div>':'')+
+      '<p class="mut" style="line-height:1.55;margin-bottom:14px">Votre dossier a été effacé. Vous pourrez déposer une nouvelle demande dans un délai de 24 h. En cas d\'erreur, écrivez à <a href="mailto:'+S.MAIL+'" style="color:var(--red);font-weight:600">'+S.MAIL+'</a>.</p><p class="small mut">Votre accès temporaire sera supprimé automatiquement sous 7 jours.</p><div class="rg-acts" style="margin-top:14px"><button class="btn dng" id="ack"></button><button class="btn" id="lo"></button></div></section>';
+      document.getElementById('ack').innerHTML=S.ic('trash')+'Effacer mon accès maintenant';
+      document.getElementById('ack').onclick=async function(){if(!confirm('Effacer définitivement votre accès ?'))return;var a=await db.rpc('staff_registration_ack');if(a.error)return S.toast(a.error.message,1);try{localStorage.removeItem('wyk-staff-dossier')}catch(e){}await S.logout()};
+      bind();return}
+    root.innerHTML='<section class="nm card" style="text-align:center"><h2 style="font-size:24px;margin-bottom:8px">Aucun dossier</h2><p class="mut" style="margin-bottom:16px">Aucun dossier d\'inscription n\'est rattaché à ce compte.</p><div class="rg-acts"><a class="btn pri" href="/moi">Mon espace</a>'+'<button class="btn" id="lo"></button></div></section>';bind();
+  }
+  load();
+})();
+</script>
+</body></html>

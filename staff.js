@@ -2,16 +2,20 @@
 (function(){
 var SUPA_URL='https://byrklytqoucdskzvcoau.supabase.co',
 SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5cmtseXRxb3VjZHNrenZjb2F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2OTQ0ODcsImV4cCI6MjA5NDI3MDQ4N30.nH7LKYevuBd9jGmFmv7KMNoJu3X_rDaY1BHXZR1v3wM',
-LOGO='/logo-wyk.png',LOGO_WB='/logo-wyk-blanc.png',
+BR='/assets/brand/',LOGO=BR+'wyk-icon.png',LOGO_D=BR+'wyk-icon-dark.png',
+/* marque transparente (fond blanc : badge, CV) et logo horizontal selon le thème */
+MARK=BR+'wyk-logo-transparent.png',MARK_D=BR+'wyk-logo-dark-transparent.png',WORD=BR+'wyk-logo-secondaire-transparent.png',WORD_D=BR+'wyk-logo-secondaire-dark-transparent.png',LOGO_WB=MARK,
 WA='50940300966',PENDING='wyk-staff-pending',THEME='wyk-staff-theme',FAIL='wyk-staff-fails',IDLE_MIN=30;
 /* LOGIN : chemin de la page de connexion (non liée nulle part sur le site). Pour la cacher davantage :
    renomme connexion.html (ex. acces-7k2m.html) ET change cette valeur. */
-var S=window.S={LOGO:LOGO,LOGO_WB:LOGO_WB,WA:WA,user:null,LOGIN:'/connexion',
+var S=window.S={LOGO:LOGO,LOGO_WB:LOGO_WB,WORD:WORD,WORD_D:WORD_D,WA:WA,user:null,LOGIN:'/connexion',
   /* Badge « xlogs Verified » : colle ici l'adresse de vérification fournie par xlogs pour l'afficher sur les profils */
   XLOGS:{url:'',label:'xlogs Verified'}};
 var db=S.db=window.supabase?window.supabase.createClient(SUPA_URL,SUPA_KEY):null;
 
 /* ---------- utilitaires ---------- */
+/* deux images (clair / sombre) : le CSS affiche celle du thème actif */
+S.themed=function(l,d,alt){return'<img class="lg-l" src="'+l+'" alt="'+(alt||'')+'"><img class="lg-d" src="'+d+'" alt="" aria-hidden="true">'};
 S.esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
 var esc=S.esc;
 S.safeUrl=function(u){try{var x=new URL(String(u||'').match(/^[a-z]+:/i)?u:'https://'+u);return /^https?:$/.test(x.protocol)?x.href:''}catch(e){return ''}};
@@ -71,10 +75,50 @@ S.myProfile=async function(){if(!S.user)return null;var r=await db.from('staff_p
 function fails(){try{return JSON.parse(localStorage.getItem(FAIL)||'{}')}catch(e){return{}}}
 function saveFails(f){try{localStorage.setItem(FAIL,JSON.stringify(f))}catch(e){}}
 S.lockLeft=function(){var f=fails();return f.until&&f.until>Date.now()?Math.ceil((f.until-Date.now())/1000):0};
-S.login=async function(email,pw){var l=S.lockLeft();if(l>0){var e=new Error('LOCK');e.secs=l;throw e}
- var r=await db.auth.signInWithPassword({email:email,password:pw});
- if(r.error){var f=fails();f.n=(f.n||0)+1;if(f.n>=5){f.until=Date.now()+Math.min(30,5*(f.n-4))*60000}saveFails(f);await new Promise(function(ok){setTimeout(ok,700)});throw r.error}
- saveFails({});S.user=r.data.user;await S.tryPending();return r.data.user};
+/* durée lisible : 45 s, 12 min, 6 h */
+S.fmtWait=function(sec){sec=Math.max(1,Math.ceil(sec||1));return sec<90?sec+' s':sec<5400?Math.ceil(sec/60)+' min':Math.ceil(sec/3600)+' h'};
+
+/* ---------- appareil : identifiant local + empreinte + infos navigateur (l'IP est lue par le SERVEUR) ---------- */
+var DID='wyk-staff-did',devP=null;
+function rnd(n){var b=new Uint8Array(n);crypto.getRandomValues(b);return Array.prototype.map.call(b,function(x){return('0'+x.toString(16)).slice(-2)}).join('')}
+async function sha(t){try{var d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return Array.prototype.map.call(new Uint8Array(d),function(x){return('0'+x.toString(16)).slice(-2)}).join('').slice(0,40)}catch(e){var h=5381;for(var i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return('f'+(h>>>0).toString(16)+'0000000000').slice(0,16)}}
+S.device=function(){if(devP)return devP;devP=(async function(){
+ var id='';try{id=localStorage.getItem(DID)||'';if(!/^[A-Za-z0-9_-]{8,80}$/.test(id)){id=rnd(16);localStorage.setItem(DID,id)}}catch(e){id=window.__wykdid||(window.__wykdid=rnd(16))}
+ var n=navigator,sc=window.screen||{},c={};
+ try{c.tz=Intl.DateTimeFormat().resolvedOptions().timeZone}catch(e){}
+ c.lang=n.language;c.langs=(n.languages||[]).slice(0,5).join(',');c.platform=n.platform;c.screen=(sc.width||0)+'x'+(sc.height||0);c.dpr=window.devicePixelRatio;c.depth=sc.colorDepth;
+ c.cores=n.hardwareConcurrency;c.mem=n.deviceMemory;c.touch=n.maxTouchPoints;c.cookies=n.cookieEnabled;c.dnt=n.doNotTrack;c.bot=n.webdriver===true;c.ua=String(n.userAgent||'').slice(0,200);
+ try{var cn=n.connection;if(cn)c.net=[cn.effectiveType,cn.downlink,cn.rtt].join('/')}catch(e){}
+ try{var u=n.userAgentData;if(u){c.mobile=u.mobile;c.brands=(u.brands||[]).map(function(b){return b.brand+' '+b.version}).join(', ').slice(0,160);
+  try{var hv=await u.getHighEntropyValues(['model','platformVersion']);c.model=hv.model;c.osv=hv.platformVersion}catch(e){}}}catch(e){}
+ try{var cv=document.createElement('canvas');cv.width=220;cv.height=40;var x=cv.getContext('2d');x.textBaseline='top';x.font='16px Arial';x.fillStyle='#e8192c';x.fillRect(4,4,90,24);x.fillStyle='#222';x.fillText('WYK STAFF · é✓',8,8);c.cv=(await sha(cv.toDataURL())).slice(0,12)}catch(e){}
+ var fp=await sha([n.userAgent,n.platform,c.langs,c.screen,c.depth,c.tz,c.cores,c.mem,c.touch,c.cv||''].join('|'));
+ return{id:id,fp:fp,client:c}})();return devP};
+
+/* connexion : le serveur contrôle le verrou (IP, appareil, empreinte, compte), choisit le compte et tient le journal */
+S.login=async function(ident,pw){var l=S.lockLeft();if(l>0){var e=new Error('LOCK');e.secs=l;throw e}
+ var dv=await S.device(),em=ident,att=null,legacy=false;
+ var st=await db.rpc('staff_login_start',{p_ident:ident,p_device:dv.id,p_fp:dv.fp,p_client:dv.client});
+ if(st.error){
+  /* script SQL v5 pas encore installé : ancien fonctionnement */
+  if(/staff_login_start|schema cache|does not exist|Could not find/i.test(st.error.message||''))legacy=true;else throw st.error;
+ }else{
+  var d=st.data||{};
+  if(d.locked){var e2=new Error('LOCK');e2.secs=d.retry||60;throw e2}
+  if(!d.ok)throw new Error('Invalid login credentials');
+  em=d.email;att=d.attempt;
+ }
+ if(legacy&&ident.indexOf('@')<0){var r0=await db.rpc('staff_login_email',{p_code:ident});em=(r0&&r0.data)||'inconnu@staff.wykht.com'}
+ var r=await db.auth.signInWithPassword({email:em,password:pw});
+ if(r.error){var f=fails();f.n=(f.n||0)+1;if(f.n>=5){f.until=Date.now()+Math.min(30,5*(f.n-4))*60000}saveFails(f);
+  if(att){try{await db.rpc('staff_login_report',{p_attempt:att,p_ok:false})}catch(x){}}
+  await new Promise(function(ok){setTimeout(ok,700)});throw r.error}
+ saveFails({});S.user=r.data.user;
+ if(att){try{await db.rpc('staff_login_report',{p_attempt:att,p_ok:true})}catch(x){}}
+ await S.tryPending();return r.data.user};
+/* où envoyer la personne après connexion : admin, profil, ou suivi de dossier */
+S.afterLogin=async function(){if(await S.isAdmin())return'/admin';var p=await S.myProfile();if(p)return'/moi';
+ try{var r=await db.rpc('staff_my_registration'),s=r.data&&r.data.state;if(s==='pending'||s==='rejected')return'/dossier'}catch(e){}return'/moi'};
 S.logout=async function(){try{await db.auth.signOut()}catch(e){}S.user=null;location.href='/'};
 S.setPending=function(o){try{localStorage.setItem(PENDING,JSON.stringify(o))}catch(e){}};
 S.saveExtras=async function(x){if(!x||!S.user)return;var u={};['birth_date','birth_place','nationality','phone','email'].forEach(function(k){if(x[k])u[k]=x[k]});if(Object.keys(u).length)await db.from('staff_profiles').update(u).eq('user_id',S.user.id)};
@@ -83,25 +127,21 @@ S.tryPending=async function(){var o=null;try{o=JSON.parse(localStorage.getItem(P
 /* déconnexion automatique après 30 min d'inactivité */
 S.idle=function(){var t,go=function(){S.logout()},rs=function(){clearTimeout(t);t=setTimeout(go,IDLE_MIN*60000)};['pointerdown','keydown','scroll','touchstart'].forEach(function(e){addEventListener(e,rs,{passive:true})});rs()};
 
-S.errMsg=function(e){var m=(e&&e.message)||String(e);if(m==='LOCK')return'Trop de tentatives. Réessayez dans '+Math.max(1,Math.ceil((e.secs||60)/60))+' min.';if(/Invalid login/i.test(m))return'Identifiants incorrects.';if(/already registered|already been registered/i.test(m))return'Cet email a déjà un compte : utilisez « J\'ai déjà un compte ».';if(/Password should be/i.test(m))return'Mot de passe trop faible.';if(/rate limit/i.test(m))return'Trop de tentatives, réessayez dans quelques minutes.';if(/Email not confirmed/i.test(m))return'Confirmez d\'abord votre email (lien reçu par courriel).';return m};
+S.errMsg=function(e){var m=(e&&e.message)||String(e);if(m==='LOCK')return'Trop de tentatives de connexion. Par sécurité, réessayez dans '+S.fmtWait(e.secs||60)+'.';if(/Invalid login/i.test(m))return'Identifiants incorrects.';if(/already registered|already been registered/i.test(m))return'Cet email a déjà un compte : utilisez « J\'ai déjà un compte ».';if(/Password should be/i.test(m))return'Mot de passe trop faible.';if(/rate limit/i.test(m))return'Trop de tentatives, réessayez dans quelques minutes.';if(/Email not confirmed/i.test(m))return'Confirmez d\'abord votre email (lien reçu par courriel).';return m};
 /* champ mot de passe avec œil */
 S.pwField=function(id,label,ac,extra){return'<div class="field"><label for="'+id+'">'+label+'</label><div class="pwf"><input type="password" id="'+id+'" autocomplete="'+ac+'" '+(extra||'')+' required><button type="button" class="eye" data-eye="'+id+'" aria-label="Afficher le mot de passe">'+ic('eye')+'</button></div></div>'};
 S.bindEyes=function(root){root.querySelectorAll('[data-eye]').forEach(function(b){b.onclick=function(){var i=root.querySelector('#'+b.dataset.eye),s=i.type==='password';i.type=s?'text':'password';b.innerHTML=ic(s?'eyeoff':'eye')}})};
 /* formulaire de connexion (sans « mot de passe oublié » : un mot de passe perdu se réinitialise via l'administration WYK) */
 S.loginForm=function(host,opts){opts=opts||{};
- host.innerHTML='<div class="msg" id="lm" style="display:none" role="alert"></div><form id="lf" novalidate><div class="field"><label for="le">ID employé</label><input type="text" id="le" autocomplete="username" autocapitalize="characters" spellcheck="false" placeholder="WYK-XXX-000" style="text-transform:uppercase;letter-spacing:.06em;font-weight:600" required></div>'+S.pwField('lp','Mot de passe','current-password')+'<button class="btn pri" style="width:100%" id="lb">'+ic('lock')+'Se connecter</button></form>';
+ host.innerHTML='<div class="msg" id="lm" style="display:none" role="alert"></div><form id="lf" novalidate><div class="field"><label for="le">ID employé ou n° de dossier</label><input type="text" id="le" autocomplete="username" autocapitalize="characters" spellcheck="false" placeholder="WYK-XXX-000 ou DOS-XXXXXX" style="text-transform:uppercase;letter-spacing:.06em;font-weight:600" required></div>'+S.pwField('lp','Mot de passe','current-password')+'<button class="btn pri" style="width:100%" id="lb">'+ic('lock')+'Se connecter</button></form>';
  S.bindEyes(host);
  var msg=function(t,ok){var m=host.querySelector('#lm');m.style.display=t?'block':'none';m.className='msg'+(ok?' ok':'');m.textContent=t||''};
- var l0=S.lockLeft();if(l0>0)msg('Trop de tentatives. Réessayez dans '+Math.ceil(l0/60)+' min.');
+ var l0=S.lockLeft();if(l0>0)msg('Trop de tentatives de connexion. Par sécurité, réessayez dans '+S.fmtWait(l0)+'.');
+ S.device();
  host.querySelector('#lf').onsubmit=async function(e){e.preventDefault();var b=host.querySelector('#lb');msg('');
-  var id=host.querySelector('#le').value.trim(),pw=host.querySelector('#lp').value;if(!id||!pw){msg('Entrez votre ID et votre mot de passe.');return}
-  var l=S.lockLeft();if(l>0){msg('Trop de tentatives. Réessayez dans '+Math.ceil(l/60)+' min.');return}
+  var id=host.querySelector('#le').value.trim(),pw=host.querySelector('#lp').value;if(!id||!pw){msg('Entrez votre identifiant et votre mot de passe.');return}
   b.disabled=true;
-  try{
-   var em=id;
-   /* ID employé -> compte (l'administrateur peut aussi saisir son adresse email) */
-   if(id.indexOf('@')<0){var r=await db.rpc('staff_login_email',{p_code:id});em=(r&&r.data)||'inconnu@staff.wykht.com'}
-   await S.login(em,pw);if(opts.onDone)return opts.onDone();location.href=(await S.isAdmin())?'/admin':'/moi'}catch(x){msg(S.errMsg(x));b.disabled=false}}};
+  try{await S.login(id,pw);if(opts.onDone)return opts.onDone();location.href=await S.afterLogin()}catch(x){msg(S.errMsg(x));b.disabled=false}}};
 
 /* ---------- coque : en-tête, menu, pied ---------- */
 S.MENU=[['Découvrir',[['index','home','Accueil'],['info?p=apropos','users','À propos de nous'],['info?p=carrieres','brief','Carrières chez WYK']]],
@@ -109,11 +149,11 @@ S.MENU=[['Découvrir',[['index','home','Accueil'],['info?p=apropos','users','À 
  ['Aide',[['info?p=contact','mail','Nous contacter','Toutes les façons de nous joindre'],['mailto:'+S.MAIL,'send','Écrire un email',S.MAIL]]]];
 S.shell=async function(active){
  var top=document.getElementById('top'),foot=document.getElementById('foot');
- top.className='top';top.innerHTML='<div class="wrap"><a class="brand" href="/"><img src="'+LOGO_WB+'" alt="WYK"><span><b>WYK STAFF</b><small>Portail des profils professionnels</small></span></a><a class="ib" id="meBtn" href="'+S.LOGIN+'" aria-label="Mon espace" style="display:none">'+ic('user')+'</a><button class="ib" id="themeBtn" aria-label="Changer de thème"></button><button class="ib" id="burger" aria-label="Ouvrir le menu" aria-expanded="false">'+ic('menu')+'</button></div>';
+ top.className='top';top.innerHTML='<div class="wrap"><a class="brand" href="/">'+S.themed(LOGO,LOGO_D,'WYK')+'<span><b>WYK STAFF</b><small>Portail des profils professionnels</small></span></a><a class="ib" id="meBtn" href="'+S.LOGIN+'" aria-label="Mon espace" style="display:none">'+ic('user')+'</a><a class="btn pri sm hd-login" id="hdLogin" href="'+S.LOGIN+'" aria-label="Se connecter" style="display:none">'+ic('lock')+'<span>Se connecter</span></a><button class="ib" id="themeBtn" aria-label="Changer de thème"></button><button class="ib" id="burger" aria-label="Ouvrir le menu" aria-expanded="false">'+ic('menu')+'</button></div>';
  var sc=document.createElement('div');sc.className='scrim';sc.id='scrim';
  var dr=document.createElement('aside');dr.className='drawer';dr.id='drawer';dr.setAttribute('aria-label','Menu');
  var items=S.MENU.map(function(g){return'<div class="dg">'+g[0]+'</div>'+g[1].map(function(m){var on=(active||'')===m[0];return'<a href="'+(m[0].indexOf('mailto:')===0?m[0]:S.url(m[0].split('?')[0],m[0].split('?')[1]))+'" class="'+(on?'act':'')+'"><span class="ico">'+ic(m[1])+'</span><span>'+m[2]+(m[3]?'<span class="sub">'+m[3]+'</span>':'')+'</span>'+ic('chev','chev')+'</a>'}).join('')}).join('');
- dr.innerHTML='<div class="dh"><img src="'+LOGO+'" alt=""><div><b>WYK STAFF</b><span>Portail des profils professionnels</span></div><button class="x" id="dx" aria-label="Fermer">'+ic('x')+'</button></div><nav class="dscroll dl"><div id="dyn"></div>'+items+'<div class="dg">Préférences</div><button id="thm"><span class="ico">'+ic('moon')+'</span><span>Thème sombre</span><span class="tgl"></span></button><button id="lang"><span class="ico">'+ic('globe')+'</span><span>Français<span class="sub">Autres langues bientôt</span></span></button></nav><div class="dfoot"><a class="dmail" href="mailto:'+S.MAIL+'">'+S.MAIL+'</a><br><i>●</i> Connexion sécurisée · © '+new Date().getFullYear()+' WYK</div>';
+ dr.innerHTML='<div class="dh">'+S.themed(LOGO,LOGO_D,'')+'<div><b>WYK STAFF</b><span>Portail des profils professionnels</span></div><button class="x" id="dx" aria-label="Fermer">'+ic('x')+'</button></div><nav class="dscroll dl"><div id="dyn"></div>'+items+'<div class="dg">Préférences</div><button id="thm"><span class="ico">'+ic('moon')+'</span><span>Thème sombre</span><span class="tgl"></span></button><button id="lang"><span class="ico">'+ic('globe')+'</span><span>Français<span class="sub">Autres langues bientôt</span></span></button></nav><div class="dfoot"><a class="dmail" href="mailto:'+S.MAIL+'">'+S.MAIL+'</a><br><i>●</i> Connexion sécurisée · © '+new Date().getFullYear()+' WYK</div>';
  document.body.appendChild(sc);document.body.appendChild(dr);
  var bg=document.getElementById('burger');
  var open=function(v){dr.classList.toggle('open',v);sc.classList.toggle('open',v);bg.setAttribute('aria-expanded',v);document.body.style.overflow=v?'hidden':''};
@@ -131,6 +171,9 @@ S.shell=async function(active){
   dyn='<div class="dme"><div class="av">'+esc((em[0]||'?').toUpperCase())+'</div><div style="min-width:0"><b>'+esc(em)+'</b><small>'+esc(sb)+'</small></div></div>'+
    (adm?'<a href="/admin"><span class="ico">'+ic('grid')+'</span><span>Espace administrateur</span>'+ic('chev','chev')+'</a>':'')+'<a href="/moi"><span class="ico">'+ic('user')+'</span><span>Mon profil</span>'+ic('chev','chev')+'</a><button id="lo" class="dng"><span class="ico">'+ic('logout')+'</span><span>Se déconnecter</span></button>';
   var me=document.getElementById('meBtn');me.style.display='grid';me.href=adm?'/admin':'/moi'}
+ if(!S.user){var onAuth=/^\/(connexion|inscription|dossier|activer)(\.html)?\/?$/.test(location.pathname);
+  dyn='<div class="dg">Mon espace</div><a href="'+S.LOGIN+'"><span class="ico">'+ic('lock')+'</span><span>Se connecter<span class="sub">ID employé ou n° de dossier</span></span>'+ic('chev','chev')+'</a><a href="/inscription"><span class="ico">'+ic('plus')+'</span><span>S\'inscrire<span class="sub">Déposer une demande d\'inscription</span></span>'+ic('chev','chev')+'</a>';
+  var hl=document.getElementById('hdLogin');if(hl&&!onAuth)hl.style.display=''}
  document.getElementById('dyn').innerHTML=dyn;var lo=document.getElementById('lo');if(lo)lo.onclick=S.logout;
  return S.user};
 
@@ -197,7 +240,7 @@ S.renderProfile=function(p,o){o=o||{};var f=p.fields||[];
  var T=[['about','user','À propos',pAbout],['exp','brief','Expérience',pExp],['skills','gear','Compétences',pSk],['contact','mail','Contact',pCt]].filter(function(t){return t[3]});
  var tabs='<div class="cv-tabs" role="tablist">'+T.map(function(t,i){return'<button type="button" role="tab" data-tab="'+t[0]+'" class="'+(i?'':'on')+'">'+ic(t[1])+t[2]+'</button>'}).join('')+'</div>';
  var panes=T.map(function(t,i){return'<div class="cv-pane'+(i?'':' on')+'" data-pane="'+t[0]+'" role="tabpanel">'+t[3]+'</div>'}).join('');
- var foot='<div class="cv-foot"><img src="'+LOGO_WB+'" alt="WYK STAFF"><i></i><span>Des talents au service de vos projets.</span></div>';
+ var foot='<div class="cv-foot">'+S.themed(WORD,WORD_D,'WYK STAFF')+'<i></i><span>Des talents au service de vos projets.</span></div>';
  var main='<div class="cv-main">'+tabs+panes+foot+'</div>';
  /* --- version imprimable (PDF) : mise en page A4 professionnelle --- */
  var sk=function(t,b){return b?'<section><h2>'+t+'</h2>'+b+'</section>':''};

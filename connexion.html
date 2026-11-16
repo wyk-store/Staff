@@ -13,9 +13,10 @@
     <section class="nm card" id="box" style="padding:28px 24px">
       <div class="ico-big"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v2"/></svg></div>
       <h2 style="text-align:center;font-size:26px;margin-bottom:4px">Accès sécurisé</h2>
-      <p class="mut small" style="text-align:center;margin-bottom:20px">Réservé aux collaborateurs et à l'administration WYK.</p>
+      <p class="mut small" style="text-align:center;margin-bottom:20px">Collaborateurs, candidats et administration WYK. Connectez-vous avec votre <b>ID employé</b> ou votre <b>n° de dossier</b>.</p>
       <div id="lf"></div>
-      <p class="small mut" style="margin-top:16px;text-align:center;line-height:1.5">Mot de passe perdu ? Contactez l'administration WYK : elle réinitialise votre accès après vérification de votre identité.<br>Écrivez-nous : <a href="mailto:contact@wykht.com"><b>contact@wykht.com</b></a></p>
+      <p class="small mut" style="margin-top:16px;text-align:center">Pas encore de dossier ? <a href="/inscription" style="color:var(--red);font-weight:600">S'inscrire</a></p>
+      <p class="small mut" style="margin-top:12px;text-align:center;line-height:1.5">Mot de passe perdu ? Contactez l'administration WYK : elle réinitialise votre accès après vérification de votre identité.<br>Écrivez-nous : <a href="mailto:contact@wykht.com"><b>contact@wykht.com</b></a></p>
     </section>
   </div>
 </div></main>
@@ -25,7 +26,7 @@
 <script>
 (async function(){
   var u=await S.shell('');
-  if(u){location.href=S.admin?'/admin':'/moi';return}
+  if(u){location.href=await S.afterLogin();return}
   S.loginForm(document.getElementById('lf'));
 })();
 </script>

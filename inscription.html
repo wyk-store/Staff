@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://byrklytqoucdskzvcoau.supabase.co wss://byrklytqoucdskzvcoau.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"><meta name="referrer" content="strict-origin-when-cross-origin"><meta name="color-scheme" content="light dark">
+<title>Inscription — WYK STAFF</title><meta name="robots" content="noindex, nofollow, noarchive">
+<link rel="icon" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&family=Caveat:wght@600&display=swap">
+<link rel="stylesheet" href="/staff.css">
+</head><body>
+<header id="top"></header>
+<main><div class="wrap rg-wrap">
+
+  <!-- 1. formulaire -->
+  <section class="nm card" id="s0">
+    <h3 id="h0"></h3>
+    <p class="rg-lead">Déposez votre dossier : l'administration WYK l'examine puis l'approuve ou le refuse. <b>Un seul dossier par personne et par appareil.</b></p>
+    <div class="msg" id="m0" style="display:none" role="alert"></div>
+    <form id="f0" novalidate>
+      <div class="row">
+        <div class="field"><label for="fn">Prénom</label><input id="fn" autocomplete="given-name" maxlength="60" required></div>
+        <div class="field"><label for="ln">Nom</label><input id="ln" autocomplete="family-name" maxlength="60" required></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="bd">Date de naissance</label><input id="bd" type="date" autocomplete="bday" min="1900-01-01" required></div>
+        <div class="field"><label for="ph">Téléphone</label><input id="ph" type="tel" inputmode="tel" placeholder="+509 …" autocomplete="tel" maxlength="30" required></div>
+      </div>
+      <div class="field"><label for="em">Email <span class="vis priv">facultatif</span></label><input id="em" type="email" autocomplete="email" placeholder="vous@exemple.com" maxlength="120"></div>
+      <div class="field" id="fpo" style="display:none"><label for="po">Poste souhaité</label><select id="po"></select><span class="small mut">Seuls les postes actuellement ouverts par WYK sont proposés. L'administration confirme le poste à l'approbation.</span></div>
+      <div class="field" style="margin-bottom:6px"><label for="pw">Créez un mot de passe</label><div class="pwf"><input type="password" id="pw" minlength="8" autocomplete="new-password" required><button type="button" class="eye" data-eye="pw" aria-label="Afficher le mot de passe"></button></div><div class="meter" id="mt"><i></i></div><span class="small mut">8 caractères minimum, avec une lettre et un chiffre.</span></div>
+      <div class="field"><label for="pw2">Confirmez le mot de passe</label><div class="pwf"><input type="password" id="pw2" autocomplete="new-password" required><button type="button" class="eye" data-eye="pw2" aria-label="Afficher le mot de passe"></button></div></div>
+      <div class="rg-box"><b>Après l'approbation</b> de votre dossier, vous pourrez modifier et compléter votre profil en profondeur : photo, parcours, compétences, CV. Si vous avez fait une erreur ici, vous pourrez la corriger à ce moment-là.</div>
+      <label class="chk"><input type="checkbox" id="ok" required><span>J'ai lu et j'accepte la <a href="/info?p=confidentialite" target="_blank" rel="noopener">politique de confidentialité</a> et les <a href="/info?p=conditions" target="_blank" rel="noopener">conditions d'utilisation</a>.</span></label>
+      <button class="btn pri" style="width:100%" id="b0"></button>
+    </form>
+    <p class="small mut" style="text-align:center;margin-top:16px">Vous avez déjà un dossier ou un compte ? <a href="/connexion" style="color:var(--red);font-weight:600">Se connecter</a></p>
+  </section>
+
+  <!-- 2. vérification + mot de passe à mémoriser -->
+  <section class="nm card" id="s1" style="display:none">
+    <h3 id="h1"></h3>
+    <div class="msg" id="m1" style="display:none" role="alert"></div>
+    <div class="rg-sum" id="sum"></div>
+    <div class="rg-warn">⚠ Mémorisez bien votre mot de passe. Il ne sera <b>plus affiché</b> après l'envoi et il vous servira à suivre votre dossier, puis à vous connecter. Notez-le dans un endroit sûr.</div>
+    <div class="nm-in" style="padding:16px;margin-bottom:16px"><div class="small mut" style="display:flex;justify-content:space-between;align-items:center;gap:10px">Votre mot de passe <button type="button" class="btn sm" id="tg"></button></div><div class="rg-pw" id="pwv"></div></div>
+    <label class="chk"><input type="checkbox" id="mem"><span>J'ai mémorisé mon mot de passe et vérifié mes informations.</span></label>
+    <div class="rg-acts"><button class="btn" id="bk"></button><button class="btn pri" id="b1" disabled></button></div>
+  </section>
+
+  <!-- 3. dossier envoyé -->
+  <section class="nm card" id="s2" style="display:none;text-align:center">
+    <div class="ico-big" style="width:64px;height:64px;border-radius:20px;display:grid;place-items:center;margin:0 auto 14px;background:linear-gradient(135deg,#22c55e,#15803d);color:#fff" id="okic"></div>
+    <h2 style="font-size:26px;margin-bottom:6px">Dossier envoyé</h2>
+    <p class="mut">Votre numéro de dossier :</p>
+    <div class="rg-ref" id="ref"></div>
+    <div class="rg-warn" style="text-align:left">Conservez ce numéro et votre mot de passe. Pour suivre votre dossier, connectez-vous avec <b>ce numéro + votre mot de passe</b>.</div>
+    <div class="rg-acts"><button class="btn" id="cpy"></button><a class="btn pri" href="/dossier" id="trk"></a></div>
+  </section>
+
+  <!-- 4. dossier déjà en cours / refus de la demande -->
+  <section class="nm card" id="s3" style="display:none;text-align:center">
+    <div class="ico-big" style="width:64px;height:64px;border-radius:20px;display:grid;place-items:center;margin:0 auto 14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff" id="wic"></div>
+    <h2 style="font-size:24px;margin-bottom:8px" id="wt">Dossier en cours</h2>
+    <p class="mut" id="wm" style="margin-bottom:14px;line-height:1.55"></p>
+    <div class="rg-ref" id="wref" style="display:none"></div>
+    <div class="rg-acts"><a class="btn pri" href="/connexion" id="wgo"></a><a class="btn" href="/">Retour à l'accueil</a></div>
+  </section>
+
+</div></main>
+<footer id="foot"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="/staff.js"></script>
+<script>
+(async function(){
+  var $=function(i){return document.getElementById(i)},esc=S.esc,db=S.db,DOSK='wyk-staff-dossier';
+  var user=await S.shell('');
+  if(user){location.href=await S.afterLogin();return}
+  S.device();
+  $('h0').innerHTML=S.ic('plus')+'Demande d\'inscription';$('h1').innerHTML=S.ic('check')+'Vérifiez et mémorisez';
+  $('b0').innerHTML=S.ic('chev')+'Continuer';$('b1').innerHTML=S.ic('send')+'Envoyer mon dossier';$('bk').textContent='Modifier';
+  $('okic').innerHTML=S.ic('check');$('wic').innerHTML=S.ic('clock');$('cpy').innerHTML=S.ic('link')+'Copier le numéro';$('trk').innerHTML=S.ic('eye')+'Suivre mon dossier';$('wgo').innerHTML=S.ic('lock')+'Suivre mon dossier';
+  document.querySelectorAll('[data-eye]').forEach(function(b){b.innerHTML=S.ic('eye')});S.bindEyes($('f0'));
+  var d16=new Date();d16.setFullYear(d16.getFullYear()-16);$('bd').max=d16.getFullYear()+'-'+String(d16.getMonth()+1).padStart(2,'0')+'-'+String(d16.getDate()).padStart(2,'0');
+  var show=function(id,t){var m=$(id);m.style.display=t?'block':'none';m.textContent=t||''};
+  var only=function(n){['s0','s1','s2','s3'].forEach(function(x){$(x).style.display=x===n?'block':'none'});window.scrollTo({top:0,behavior:'smooth'})};
+  var localRef='';try{localRef=localStorage.getItem(DOSK)||''}catch(e){}
+  if(localRef)show('m0','Un dossier a déjà été envoyé depuis cet appareil ('+localRef+'). Connectez-vous pour suivre son état.');
+
+  /* postes ouverts aux inscriptions (cochés par l'administrateur) */
+  var po=await db.rpc('staff_open_positions');
+  if(po.error){show('m0','Les inscriptions ne sont pas encore activées. Contactez l\'administration WYK (contact@wykht.com).');$('b0').disabled=true}
+  else if(po.data&&po.data.length){$('fpo').style.display='';$('po').innerHTML='<option value="">— Choisir —</option>'+po.data.map(function(p){return'<option value="'+esc(p.id)+'">'+esc(p.title)+'</option>'}).join('')}
+
+  var strength=function(v){var s=0;if(v.length>=8)s++;if(/[a-zA-Z]/.test(v)&&/\d/.test(v))s++;if(v.length>=12)s++;if(/[^a-zA-Z0-9]/.test(v))s++;return s};
+  $('pw').oninput=function(){var s=strength($('pw').value),i=$('mt').firstChild;i.style.width=(s*25)+'%';i.style.background=s<2?'var(--bad)':s<3?'var(--warn)':'var(--ok)'};
+  var data=null,hidden=false;
+
+  /* étape 1 → 2 */
+  $('f0').onsubmit=function(e){e.preventDefault();show('m0','');
+    var fn=$('fn').value.trim(),ln=$('ln').value.trim(),bd=$('bd').value,ph=$('ph').value.trim(),em=$('em').value.trim(),pw=$('pw').value,digits=ph.replace(/\D/g,'');
+    if(fn.length<2||ln.length<2){show('m0','Entrez votre prénom et votre nom.');return}
+    if(!bd||bd>$('bd').max||bd<'1900-01-01'){show('m0','Date de naissance invalide (16 ans minimum).');return}
+    if(digits.length<8||digits.length>15){show('m0','Numéro de téléphone invalide.');return}
+    if(em&&!S.validEmail(em)){show('m0','Adresse email invalide.');return}
+    if(strength(pw)<2){show('m0','Mot de passe trop faible : 8 caractères minimum, avec au moins une lettre et un chiffre.');return}
+    if(pw!==$('pw2').value){show('m0','Les deux mots de passe ne sont pas identiques.');return}
+    if(!$('ok').checked){show('m0','Veuillez accepter la politique de confidentialité et les conditions d\'utilisation.');return}
+    data={fn:fn,ln:ln,bd:bd,ph:ph,em:em,pw:pw,po:$('po').value||null,poT:$('po').value?$('po').options[$('po').selectedIndex].text:''};
+    $('sum').innerHTML=[['Prénom',data.fn],['Nom',data.ln],['Date de naissance',S.date(bd,'full')],['Téléphone',data.ph],['Email',data.em||'—']].concat(data.po?[['Poste souhaité',data.poT]]:[]).map(function(r){return'<div><small>'+r[0]+'</small><span>'+esc(r[1])+'</span></div>'}).join('');
+    hidden=false;$('pwv').textContent=pw;$('tg').innerHTML=S.ic('eyeoff')+'Masquer';$('mem').checked=false;$('b1').disabled=true;show('m1','');only('s1')};
+  $('tg').onclick=function(){hidden=!hidden;$('pwv').textContent=hidden?'•'.repeat(data.pw.length):data.pw;$('tg').innerHTML=S.ic(hidden?'eye':'eyeoff')+(hidden?'Afficher':'Masquer')};
+  $('mem').onchange=function(){$('b1').disabled=!$('mem').checked};
+  $('bk').onclick=function(){only('s0')};
+
+  var waiting=function(msg,ref){$('wm').textContent=msg;var r=$('wref');if(ref){r.style.display='';r.textContent=ref}else r.style.display='none';only('s3')};
+
+  /* étape 2 → envoi */
+  $('b1').onclick=async function(){show('m1','');$('b1').disabled=true;
+    try{
+      var dv=await S.device();
+      /* 1) le serveur vérifie qu'aucun dossier n'est déjà en cours pour cet appareil / ces coordonnées */
+      var g=await db.rpc('staff_registration_gate',{p_device:dv.id,p_fp:dv.fp,p_phone:data.ph,p_email:data.em,p_client:dv.client});
+      if(g.error)throw g.error;
+      if(!g.data.allowed){if(g.data.code==='exists'){$('wt').textContent='Dossier déjà en cours';waiting(g.data.message,localRef)}else{$('wt').textContent='Inscription impossible pour le moment';$('wgo').style.display='none';waiting(g.data.message)}return}
+      /* 2) compte technique : l'identifiant de connexion sera le n° de dossier, puis l'ID employé après approbation */
+      var rb=new Uint8Array(12);crypto.getRandomValues(rb);var tech='staff-'+Array.prototype.map.call(rb,function(b){return('0'+b.toString(16)).slice(-2)}).join('')+'@staff.wykht.com';
+      var r=await db.auth.signUp({email:tech,password:data.pw,options:{data:{full_name:data.fn+' '+data.ln}}});
+      if(r.error)throw r.error;
+      if(!r.data.session){show('m1','Inscription momentanément indisponible. Contactez l\'administration WYK (contact@wykht.com).');$('b1').disabled=false;return}
+      S.user=r.data.user;
+      /* 3) dépôt du dossier : aucun ID employé n'est créé à ce stade */
+      var x=await db.rpc('staff_submit_registration',{p_first:data.fn,p_last:data.ln,p_birth:data.bd,p_phone:data.ph,p_email:data.em,p_position:data.po,p_device:dv.id,p_fp:dv.fp,p_client:dv.client});
+      if(x.error){try{await db.auth.signOut()}catch(e){}throw x.error}
+      if(!x.data.ok){try{await db.auth.signOut()}catch(e){}if(x.data.code==='exists'){$('wt').textContent='Dossier déjà en cours';waiting(x.data.message,localRef)}else{$('wt').textContent='Inscription impossible pour le moment';$('wgo').style.display='none';waiting(x.data.message)}return}
+      try{localStorage.setItem(DOSK,x.data.ref)}catch(e){}
+      localRef=x.data.ref;$('ref').textContent=x.data.ref;only('s2');
+    }catch(err){show('m1',S.errMsg(err));$('b1').disabled=!$('mem').checked}
+  };
+  $('cpy').onclick=function(){S.copy($('ref').textContent,'Numéro de dossier copié')};
+})();
+</script>
+</body></html>

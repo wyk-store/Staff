@@ -19,7 +19,8 @@
   if(!user){location.href='/';return}
   await S.tryPending();
   var row=await S.myProfile();
-  if(!row){root.innerHTML='<div class="nm card unavail" style="max-width:520px;margin:auto"><h2>Pas encore de profil</h2><p class="mut">Ce compte n\'est lié à aucun profil WYK. Entrez le code d\'invitation reçu de WYK pour créer le vôtre.</p><p style="margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><a class="btn pri" href="/activer">'+S.ic('key')+'Entrer mon code</a>'+(S.admin?'<a class="btn" href="/admin">'+S.ic('grid')+'Espace administrateur</a>':'')+'</p></div>';return}
+  if(!row){var rg=null;try{rg=(await S.db.rpc('staff_my_registration')).data}catch(e){}if(rg&&(rg.state==='pending'||rg.state==='rejected')){location.href='/dossier';return}
+  root.innerHTML='<div class="nm card unavail" style="max-width:520px;margin:auto"><h2>Pas encore de profil</h2><p class="mut">Ce compte n\'est lié à aucun profil WYK. Entrez le code d\'invitation reçu de WYK pour créer le vôtre.</p><p style="margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><a class="btn pri" href="/activer">'+S.ic('key')+'Entrer mon code</a>'+(S.admin?'<a class="btn" href="/admin">'+S.ic('grid')+'Espace administrateur</a>':'')+'</p></div>';return}
   var q=await Promise.all([S.db.from('staff_positions').select('*'),S.db.from('staff_categories').select('*')]);
   var positions=q[0].data||[],cats=q[1].data||[];
   var posOf=function(r){return positions.find(function(x){return x.id===r.position_id})||{}};

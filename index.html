@@ -10,12 +10,24 @@
 <header id="top"></header>
 <main><div class="wrap">
   <section class="hero">
+    <div class="hero-brand" id="hb"></div>
     <span class="eyebrow">WYK STAFF</span>
     <h1>Votre profil professionnel, <span class="red">signé WYK</span></h1>
     <p>Un espace pour les collaborateurs et livreurs de WYK : une page de présentation claire, un badge numérique animé, un QR code et un CV professionnel prêt à partager.</p>
+    <div class="cta" id="cta">
+      <a class="btn pri lg" href="/connexion" id="cta-login"></a>
+      <a class="btn lg" href="/inscription" id="cta-reg"></a>
+    </div>
   </section>
   <div id="auth" class="gate" style="display:none"></div>
+  <h2 class="sec-t">Comment ça marche</h2>
+  <p class="sec-s">Une inscription simple, validée par l'administration WYK.</p>
   <div class="steps">
+    <div class="nm step"><h4>Déposez votre dossier</h4><p>Remplissez le formulaire d'inscription : identité, téléphone, email et mot de passe. Un numéro de dossier vous est remis.</p></div>
+    <div class="nm step"><h4>L'administration l'examine</h4><p>Suivez l'avancement à tout moment en vous connectant avec votre numéro de dossier. Un seul dossier par personne.</p></div>
+    <div class="nm step"><h4>Accédez à votre espace</h4><p>Dès l'approbation, vous recevez votre ID employé et complétez votre profil : photo, parcours, compétences.</p></div>
+  </div>
+  <div class="steps feat">
     <div class="nm step"><h4>Une page claire</h4><p>Une présentation professionnelle de chaque membre de l'équipe WYK : poste, parcours et compétences.</p></div>
     <div class="nm step"><h4>Un badge numérique</h4><p>Un badge animé avec QR code, à partager ou à télécharger en image et en PDF.</p></div>
     <div class="nm step"><h4>Un CV professionnel</h4><p>Un CV soigné, mis en page sur une page, prêt à être partagé.</p></div>
@@ -28,12 +40,16 @@
 <script>
 (async function(){
   var u=await S.shell('index');
+  document.getElementById('hb').innerHTML=S.themed(S.WORD,S.WORD_D,'WYK');
+  document.getElementById('cta-login').innerHTML=S.ic('lock')+'Se connecter';
+  document.getElementById('cta-reg').innerHTML=S.ic('plus')+'S\'inscrire';
   if(u){
+    document.getElementById('cta').style.display='none';
     var nm=S.me?S.me.full_name+' · '+S.me.employee_code:(S.isSyn(u.email)?'':u.email);
     var h=document.getElementById('auth');h.style.display='';
     h.innerHTML='<section class="nm card" style="text-align:center"><h3 style="justify-content:center">'+S.ic('user')+'Vous êtes connecté</h3><p class="mut" style="margin-bottom:18px">'+S.esc(nm)+'</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><a class="btn pri" href="/moi">'+S.ic('user')+'Mon profil</a>'+(S.admin?'<a class="btn" href="/admin">'+S.ic('grid')+'Espace administrateur</a>':'')+'</div></section>';
   }else if(S.q('session')==='expiree'){
-    var g=document.getElementById('auth');g.style.display='';g.innerHTML='<div class="msg">Votre session a expiré par sécurité.</div>';
+    var g=document.getElementById('auth');g.style.display='';g.innerHTML='<div class="msg">Votre session a expiré par sécurité. Reconnectez-vous avec le bouton ci-dessus.</div>';
   }
 })();
 </script>
